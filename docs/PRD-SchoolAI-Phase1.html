@@ -1,0 +1,2531 @@
+<title>SchoolAI CRM — Product Requirements Document</title>
+<style>
+  @font-face {
+    font-family: 'Display';
+    src: local('Avenir Next'), local('Avenir'), local('Segoe UI'), local('Helvetica Neue');
+    font-display: swap;
+  }
+
+  :root {
+    --ink: #1A1D23;
+    --ink-secondary: #4A5568;
+    --ink-tertiary: #718096;
+    --surface: #FAFAFB;
+    --surface-raised: #FFFFFF;
+    --surface-sunken: #F0F1F3;
+    --border: #E2E4E9;
+    --border-subtle: #ECEDF0;
+    --accent: #2563EB;
+    --accent-soft: #EFF6FF;
+    --accent-text: #1E40AF;
+    --teal: #0D9488;
+    --teal-soft: #F0FDFA;
+    --teal-text: #115E59;
+    --amber: #D97706;
+    --amber-soft: #FFFBEB;
+    --amber-text: #92400E;
+    --coral: #DC2626;
+    --coral-soft: #FEF2F2;
+    --coral-text: #991B1B;
+    --green: #059669;
+    --green-soft: #ECFDF5;
+    --green-text: #065F46;
+    --purple: #7C3AED;
+    --purple-soft: #F5F3FF;
+    --purple-text: #5B21B6;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #E8EAF0;
+      --ink-secondary: #A0AEC0;
+      --ink-tertiary: #718096;
+      --surface: #0F1117;
+      --surface-raised: #1A1D27;
+      --surface-sunken: #0A0C12;
+      --border: #2D3348;
+      --border-subtle: #232839;
+      --accent: #60A5FA;
+      --accent-soft: #1E293B;
+      --accent-text: #93C5FD;
+      --teal: #2DD4BF;
+      --teal-soft: #132B27;
+      --teal-text: #5EEAD4;
+      --amber: #FBBF24;
+      --amber-soft: #2A2210;
+      --amber-text: #FCD34D;
+      --coral: #F87171;
+      --coral-soft: #2A1515;
+      --coral-text: #FCA5A5;
+      --green: #34D399;
+      --green-soft: #0F2A1E;
+      --green-text: #6EE7B7;
+      --purple: #A78BFA;
+      --purple-soft: #1E1635;
+      --purple-text: #C4B5FD;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #E8EAF0;
+    --ink-secondary: #A0AEC0;
+    --ink-tertiary: #718096;
+    --surface: #0F1117;
+    --surface-raised: #1A1D27;
+    --surface-sunken: #0A0C12;
+    --border: #2D3348;
+    --border-subtle: #232839;
+    --accent: #60A5FA;
+    --accent-soft: #1E293B;
+    --accent-text: #93C5FD;
+    --teal: #2DD4BF;
+    --teal-soft: #132B27;
+    --teal-text: #5EEAD4;
+    --amber: #FBBF24;
+    --amber-soft: #2A2210;
+    --amber-text: #FCD34D;
+    --coral: #F87171;
+    --coral-soft: #2A1515;
+    --coral-text: #FCA5A5;
+    --green: #34D399;
+    --green-soft: #0F2A1E;
+    --green-text: #6EE7B7;
+    --purple: #A78BFA;
+    --purple-soft: #1E1635;
+    --purple-text: #C4B5FD;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  :root[data-theme="light"] {
+    --ink: #1A1D23;
+    --ink-secondary: #4A5568;
+    --ink-tertiary: #718096;
+    --surface: #FAFAFB;
+    --surface-raised: #FFFFFF;
+    --surface-sunken: #F0F1F3;
+    --border: #E2E4E9;
+    --border-subtle: #ECEDF0;
+    --accent: #2563EB;
+    --accent-soft: #EFF6FF;
+    --accent-text: #1E40AF;
+    --teal: #0D9488;
+    --teal-soft: #F0FDFA;
+    --teal-text: #115E59;
+    --amber: #D97706;
+    --amber-soft: #FFFBEB;
+    --amber-text: #92400E;
+    --coral: #DC2626;
+    --coral-soft: #FEF2F2;
+    --coral-text: #991B1B;
+    --green: #059669;
+    --green-soft: #ECFDF5;
+    --green-text: #065F46;
+    --purple: #7C3AED;
+    --purple-soft: #F5F3FF;
+    --purple-text: #5B21B6;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    line-height: 1.65;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--surface-raised);
+    border-right: 1px solid var(--border);
+    padding: 28px 20px;
+    font-size: 13px;
+    scrollbar-width: thin;
+  }
+
+  .sidebar-brand {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .sidebar-version {
+    font-size: 11px;
+    color: var(--ink-tertiary);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .sidebar-section {
+    margin-bottom: 22px;
+  }
+
+  .sidebar-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-tertiary);
+    margin-bottom: 8px;
+    padding-left: 8px;
+  }
+
+  .sidebar a {
+    display: block;
+    padding: 5px 8px;
+    color: var(--ink-secondary);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.15s ease;
+    line-height: 1.4;
+  }
+
+  .sidebar a:hover {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+  }
+
+  /* ── Main ── */
+  .main {
+    padding: 48px 56px 80px;
+    max-width: 920px;
+  }
+
+  @media (max-width: 900px) {
+    .main { padding: 32px 20px 60px; }
+  }
+
+  /* ── Header ── */
+  .doc-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .doc-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .doc-title {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 12px;
+    text-wrap: balance;
+  }
+
+  .doc-subtitle {
+    font-size: 17px;
+    color: var(--ink-secondary);
+    line-height: 1.5;
+    max-width: 600px;
+  }
+
+  .doc-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--ink-tertiary);
+  }
+
+  .doc-meta span { display: flex; align-items: center; gap: 5px; }
+
+  /* ── Sections ── */
+  .module-section {
+    margin-bottom: 56px;
+  }
+
+  .module-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .module-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .module-badge.parent { background: var(--accent-soft); color: var(--accent); }
+  .module-badge.teacher { background: var(--teal-soft); color: var(--teal); }
+  .module-badge.admin { background: var(--purple-soft); color: var(--purple); }
+
+  .module-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .module-desc {
+    color: var(--ink-secondary);
+    margin-bottom: 28px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── Feature Cards ── */
+  .feature {
+    background: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+
+  .feature summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .feature summary::-webkit-details-marker { display: none; }
+
+  .feature summary:hover { background: var(--surface-sunken); }
+
+  .feature-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .parent .feature-num { background: var(--accent-soft); color: var(--accent-text); }
+  .teacher .feature-num { background: var(--teal-soft); color: var(--teal-text); }
+  .admin .feature-num { background: var(--purple-soft); color: var(--purple-text); }
+
+  .feature-name {
+    font-weight: 600;
+    font-size: 15px;
+    flex: 1;
+  }
+
+  .feature-arrow {
+    color: var(--ink-tertiary);
+    font-size: 12px;
+    transition: transform 0.2s;
+  }
+
+  .feature[open] .feature-arrow { transform: rotate(90deg); }
+
+  .feature-body {
+    padding: 0 20px 24px 20px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .feature-body h4 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-tertiary);
+    margin: 20px 0 10px;
+  }
+
+  .feature-body h4:first-child { margin-top: 20px; }
+
+  .feature-body p {
+    color: var(--ink-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .feature-body ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .feature-body li {
+    position: relative;
+    padding-left: 18px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: var(--ink-secondary);
+    line-height: 1.55;
+  }
+
+  .feature-body li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .data-item {
+    background: var(--surface-sunken);
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .data-item .label {
+    color: var(--ink-tertiary);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .data-item .value {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .tag.must { background: var(--coral-soft); color: var(--coral-text); }
+  .tag.should { background: var(--amber-soft); color: var(--amber-text); }
+  .tag.nice { background: var(--green-soft); color: var(--green-text); }
+
+  .user-story {
+    background: var(--surface-sunken);
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-secondary);
+  }
+
+  .parent .user-story { border-left-color: var(--accent); }
+  .teacher .user-story { border-left-color: var(--teal); }
+  .admin .user-story { border-left-color: var(--purple); }
+
+  .rule-box {
+    background: var(--amber-soft);
+    border: 1px solid var(--amber);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--amber-text);
+  }
+
+  .notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .notif {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--ink-secondary);
+    padding: 6px 10px;
+    background: var(--surface-sunken);
+    border-radius: var(--radius);
+  }
+
+  .notif-trigger {
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── AI Section ── */
+  .ai-section {
+    background: linear-gradient(135deg, var(--accent-soft), var(--purple-soft));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    margin-bottom: 48px;
+  }
+
+  .ai-section h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .ai-flow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .ai-flow-step {
+    background: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .ai-flow-step .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .ai-flow-step .step-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .ai-flow-step .step-desc {
+    font-size: 12px;
+    color: var(--ink-secondary);
+  }
+
+  /* ── Table ── */
+  .spec-table-wrap {
+    overflow-x: auto;
+    margin: 12px 0;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .spec-table th {
+    background: var(--surface-sunken);
+    padding: 8px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-tertiary);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .spec-table td {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--ink-secondary);
+  }
+
+  .spec-table tr:last-child td { border-bottom: none; }
+
+  /* ── Summary Cards ── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  @media (max-width: 700px) {
+    .summary-grid { grid-template-columns: 1fr; }
+  }
+
+  .summary-card {
+    background: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .summary-card .num {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .summary-card .label-text {
+    font-size: 13px;
+    color: var(--ink-secondary);
+    margin-top: 2px;
+  }
+
+  .section-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  /* ── Sub-sections in main ── */
+  .sub-section {
+    margin-bottom: 40px;
+  }
+
+  .sub-section > h3 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .sub-section p {
+    color: var(--ink-secondary);
+    font-size: 14px;
+    line-height: 1.65;
+    margin-bottom: 12px;
+  }
+
+  .callout {
+    padding: 16px 20px;
+    border-radius: var(--radius);
+    margin: 16px 0;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .callout.info { background: var(--accent-soft); border-left: 3px solid var(--accent); color: var(--accent-text); }
+  .callout.warn { background: var(--amber-soft); border-left: 3px solid var(--amber); color: var(--amber-text); }
+  .callout.success { background: var(--green-soft); border-left: 3px solid var(--green); color: var(--green-text); }
+</style>
+
+<div class="layout">
+  <!-- ── Sidebar ── -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">SchoolAI CRM</div>
+    <div class="sidebar-version">PRD v1.0 &middot; Phase 1</div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Overview</div>
+      <a href="#executive-summary">Executive Summary</a>
+      <a href="#product-vision">Product Vision</a>
+      <a href="#user-personas">User Personas</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Module 1 &mdash; Parents</div>
+      <a href="#p-dashboard">Dashboard</a>
+      <a href="#p-attendance">Attendance</a>
+      <a href="#p-homework">Homework</a>
+      <a href="#p-academic">Academic Progress</a>
+      <a href="#p-fees">Fee Management</a>
+      <a href="#p-notices">School Notices</a>
+      <a href="#p-leave">Leave Request</a>
+      <a href="#p-timetable">Timetable</a>
+      <a href="#p-transport">Transport Tracking</a>
+      <a href="#p-chat">Parent-Teacher Chat</a>
+      <a href="#p-vault">Document Vault</a>
+      <a href="#p-gallery">Event Gallery</a>
+      <a href="#p-ai">AI Assistant</a>
+      <a href="#p-summary">Daily Summary</a>
+      <a href="#p-emergency">Emergency Alerts</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Module 2 &mdash; Teacher</div>
+      <a href="#t-dashboard">Teacher Dashboard</a>
+      <a href="#t-attendance">Attendance Mgmt</a>
+      <a href="#t-homework">Homework Mgmt</a>
+      <a href="#t-exam">Exam & Marks</a>
+      <a href="#t-timetable">Class Timetable</a>
+      <a href="#t-parent-comm">Parent Communication</a>
+      <a href="#t-announcements">Announcements</a>
+      <a href="#t-material">Study Material</a>
+      <a href="#t-leave">Leave Management</a>
+      <a href="#t-performance">Student Performance</a>
+      <a href="#t-planner">Task & Lesson Planner</a>
+      <a href="#t-ai">AI Assistant</a>
+      <a href="#t-gallery">Class Gallery</a>
+      <a href="#t-notifs">Notifications</a>
+      <a href="#t-docs">Document Management</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Module 3 &mdash; Super Admin</div>
+      <a href="#a-dashboard">School Dashboard</a>
+      <a href="#a-students">Student Management</a>
+      <a href="#a-staff">Teacher & Staff Mgmt</a>
+      <a href="#a-classes">Class & Section Mgmt</a>
+      <a href="#a-fees">Fee Management</a>
+      <a href="#a-academic">Academic Management</a>
+      <a href="#a-announcements">Announcements</a>
+      <a href="#a-reports">Reports & Analytics</a>
+      <a href="#a-docs">Document Management</a>
+      <a href="#a-roles">Role & Permissions</a>
+      <a href="#a-transport">Transport Management</a>
+      <a href="#a-inventory">Inventory Management</a>
+      <a href="#a-comm">Communication Center</a>
+      <a href="#a-ai">AI Insights</a>
+      <a href="#a-settings">School Settings</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">System-Wide</div>
+      <a href="#ai-deep-dive">AI Assistant Deep Dive</a>
+      <a href="#notification-system">Notification System</a>
+      <a href="#data-flow">Cross-Module Data Flow</a>
+      <a href="#nfr">Non-Functional Requirements</a>
+    </div>
+  </nav>
+
+  <!-- ── Main Content ── -->
+  <main class="main">
+
+    <!-- HEADER -->
+    <header class="doc-header">
+      <div class="doc-eyebrow">Product Requirements Document</div>
+      <h1 class="doc-title">SchoolAI CRM &mdash; Phase 1</h1>
+      <p class="doc-subtitle">AI-powered School Management System with dedicated modules for Parents, Teachers, and Super Admins. Complete feature specification for MVP development.</p>
+      <div class="doc-meta">
+        <span>Version 1.0</span>
+        <span>Phase 1 &mdash; MVP</span>
+        <span>45 Features &middot; 3 Modules</span>
+        <span>July 2026</span>
+      </div>
+    </header>
+
+    <!-- SUMMARY CARDS -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="num" style="color: var(--accent);">15</div>
+        <div class="label-text">Parent/Child Features</div>
+      </div>
+      <div class="summary-card">
+        <div class="num" style="color: var(--teal);">15</div>
+        <div class="label-text">Teacher Features</div>
+      </div>
+      <div class="summary-card">
+        <div class="num" style="color: var(--purple);">15</div>
+        <div class="label-text">Super Admin Features</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- EXECUTIVE SUMMARY -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section id="executive-summary" class="sub-section">
+      <h3>Executive Summary</h3>
+      <p>SchoolAI CRM is a comprehensive, AI-powered school management platform designed specifically for Indian K-12 schools. The platform connects three key stakeholders &mdash; Parents, Teachers, and School Administration &mdash; through dedicated modules, each tailored to their specific needs and workflows.</p>
+      <p>Phase 1 (MVP) delivers 45 core features across 3 modules, with integrated AI assistance at every level. The AI layer differentiates SchoolAI from traditional ERPs by providing intelligent insights, automated content generation, and natural-language query support.</p>
+      <div class="callout info">
+        <strong>Core Differentiator:</strong> Unlike traditional school ERPs that are data-entry systems, SchoolAI uses AI to transform raw school data into actionable insights, automated communications, and intelligent assistance for every user role.
+      </div>
+    </section>
+
+    <!-- PRODUCT VISION -->
+    <section id="product-vision" class="sub-section">
+      <h3>Product Vision</h3>
+      <p><strong>Mission:</strong> Make school management effortless through AI-powered automation, real-time communication, and data-driven insights &mdash; so teachers can focus on teaching, parents stay connected, and admins run operations smoothly.</p>
+
+      <h4 style="font-size:14px; font-weight:700; margin:16px 0 8px; color:var(--ink);">Key Goals</h4>
+      <ul style="list-style:none; padding:0;">
+        <li style="padding-left:18px; margin-bottom:6px; font-size:14px; color:var(--ink-secondary); position:relative;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--accent);"></span><strong>Real-time transparency</strong> &mdash; Parents see attendance, homework, and fees as they happen, not days later</li>
+        <li style="padding-left:18px; margin-bottom:6px; font-size:14px; color:var(--ink-secondary); position:relative;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--accent);"></span><strong>Teacher productivity</strong> &mdash; One-click attendance, AI-generated homework and remarks, automated report cards</li>
+        <li style="padding-left:18px; margin-bottom:6px; font-size:14px; color:var(--ink-secondary); position:relative;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--accent);"></span><strong>Admin intelligence</strong> &mdash; AI surfaces fee defaulters, attendance anomalies, performance trends without manual analysis</li>
+        <li style="padding-left:18px; margin-bottom:6px; font-size:14px; color:var(--ink-secondary); position:relative;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--accent);"></span><strong>Multi-channel communication</strong> &mdash; App push, SMS, WhatsApp, and email from one center</li>
+      </ul>
+    </section>
+
+    <!-- USER PERSONAS -->
+    <section id="user-personas" class="sub-section">
+      <h3>User Personas</h3>
+      <div class="data-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+        <div style="background:var(--accent-soft); padding:20px; border-radius:var(--radius-lg);">
+          <div style="font-weight:700; font-size:15px; color:var(--accent-text); margin-bottom:8px;">Parent / Guardian</div>
+          <div style="font-size:13px; color:var(--ink-secondary); line-height:1.5;">Wants instant updates on their child's school life. Checks the app 2-3 times daily &mdash; morning (bus tracking), afternoon (homework), evening (daily summary). Pays fees online. Needs Hindi + English support. Primary device: smartphone (Android 80%, iOS 20%).</div>
+        </div>
+        <div style="background:var(--teal-soft); padding:20px; border-radius:var(--radius-lg);">
+          <div style="font-weight:700; font-size:15px; color:var(--teal-text); margin-bottom:8px;">Teacher</div>
+          <div style="font-size:13px; color:var(--ink-secondary); line-height:1.5;">Manages 30-50 students per class, 3-5 classes per day. Marks attendance in 2 minutes. Assigns homework from phone between classes. Wants AI to write report card remarks. Uses tablet or laptop in staffroom, phone in classroom.</div>
+        </div>
+        <div style="background:var(--purple-soft); padding:20px; border-radius:var(--radius-lg);">
+          <div style="font-weight:700; font-size:15px; color:var(--purple-text); margin-bottom:8px;">Super Admin / Principal</div>
+          <div style="font-size:13px; color:var(--ink-secondary); line-height:1.5;">Oversees entire school operations. Needs high-level dashboards with drill-down capability. Manages 500-3000 students, 30-150 staff. Monitors fee collection daily. Sends announcements to specific groups. Primarily uses desktop/laptop.</div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MODULE 1: PARENTS/CHILDREN -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="module-section parent" id="module-parent">
+      <div class="module-header">
+        <div class="module-badge parent">P</div>
+        <h2 class="module-title">Module 1 &mdash; Parents / Children</h2>
+      </div>
+      <p class="module-desc">The primary user-facing module. Parents access everything about their child's school life through this module. If a parent has multiple children enrolled, they can switch between profiles from a single account. Every screen prioritizes mobile-first design since 90%+ parents will use the app on smartphones.</p>
+
+      <!-- F1: Dashboard -->
+      <details class="feature" id="p-dashboard">
+        <summary>
+          <span class="feature-num">01</span>
+          <span class="feature-name">Dashboard</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>The home screen after login. A single-glance overview of everything important about the child's school day. Designed for a parent who opens the app for 30 seconds and wants to know: "Is everything okay today?"</p>
+
+          <h4>User Stories</h4>
+          <div class="user-story">"As a parent, I want to see my child's attendance, pending homework, and any school announcements on one screen so I don't have to navigate multiple pages."</div>
+          <div class="user-story">"As a parent with 2 children in the same school, I want to switch between their profiles easily."</div>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Child Profile Switcher (top bar):</strong> Child's photo, name, class &amp; section, roll number. Tap to switch if multiple children enrolled.</li>
+            <li><strong>Today's Attendance Card:</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Status badge: <span class="tag" style="background:var(--green-soft);color:var(--green-text);">Present</span> / <span class="tag" style="background:var(--coral-soft);color:var(--coral-text);">Absent</span> / <span class="tag" style="background:var(--amber-soft);color:var(--amber-text);">Late</span></li>
+                <li>&#8226; Time of check-in (if recorded via biometric/RFID)</li>
+                <li>&#8226; Monthly attendance percentage as a small ring chart (e.g., 92%)</li>
+              </ul>
+            </li>
+            <li><strong>Homework Summary Card:</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Count of pending homework items (e.g., "3 pending")</li>
+                <li>&#8226; Next due date with urgency color (red if due today/tomorrow)</li>
+                <li>&#8226; Subject-wise mini list (Math, Science, English...) with status dots</li>
+              </ul>
+            </li>
+            <li><strong>Fee Status Card:</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Current dues amount in INR (e.g., "&#8377;15,000 due")</li>
+                <li>&#8226; Due date with days remaining</li>
+                <li>&#8226; Quick "Pay Now" button linking to payment gateway</li>
+                <li>&#8226; Green checkmark if all fees are cleared</li>
+              </ul>
+            </li>
+            <li><strong>Announcements Carousel:</strong> Latest 3-5 announcements as horizontal cards. Priority announcements pinned. Each shows title, date, and category tag (Holiday/Exam/Event/General).</li>
+            <li><strong>Upcoming Events Strip:</strong> Next 3 events in chronological order &mdash; event name, date, and type icon.</li>
+            <li><strong>Quick Action Buttons:</strong> Leave Request, Chat with Teacher, View Timetable, Pay Fees &mdash; 4 shortcut buttons in a 2x2 grid.</li>
+            <li><strong>AI Assistant Floating Button:</strong> Bottom-right corner, opens the conversational AI chat interface.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Dashboard data refreshes every 60 seconds when app is in foreground.</li>
+            <li>Attendance card shows "Awaiting" state until teacher marks attendance for the day.</li>
+            <li>Fee card only appears if there are current or upcoming dues within 30 days.</li>
+            <li>Announcements older than 30 days auto-archive from carousel.</li>
+            <li>Child switcher only appears if parent has &gt;1 child enrolled.</li>
+          </ul>
+
+          <h4>Notifications Triggered</h4>
+          <div class="notification-list">
+            <div class="notif"><span class="notif-trigger">None directly</span> Dashboard is a consumer of data, not a producer. Notifications come from individual features.</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- F2: Attendance -->
+      <details class="feature" id="p-attendance">
+        <summary>
+          <span class="feature-num">02</span>
+          <span class="feature-name">Attendance</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Detailed attendance tracking and history for the child. Goes beyond "present/absent" to show patterns, trends, and subject-wise attendance where applicable. Parents receive instant notifications when attendance is marked.</p>
+
+          <h4>User Stories</h4>
+          <div class="user-story">"As a parent, I want to get notified immediately when my child is marked absent so I can verify if they actually reached school."</div>
+          <div class="user-story">"As a parent, I want to see monthly/yearly attendance patterns to identify if my child is missing school too often."</div>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Today's Status Banner:</strong> Large status display &mdash; Present (green) / Absent (red) / Late (amber) / Half-Day (blue). Shows marked time and marked-by teacher name.</li>
+            <li><strong>Monthly Calendar Heatmap:</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Calendar grid with color-coded days: Green (present), Red (absent), Amber (late), Grey (holiday/weekend), Blue (half-day)</li>
+                <li>&#8226; Tap any day to see detailed info (check-in time, marked by, leave type if applicable)</li>
+              </ul>
+            </li>
+            <li><strong>Statistics Panel:</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Total working days this month / year</li>
+                <li>&#8226; Days present / absent / late</li>
+                <li>&#8226; Attendance percentage (month &amp; year-to-date)</li>
+                <li>&#8226; Comparison with class average (optional)</li>
+              </ul>
+            </li>
+            <li><strong>Trend Chart:</strong> Line graph showing monthly attendance percentage over the academic year.</li>
+            <li><strong>Subject-wise Attendance (if tracked):</strong> Table showing attendance per subject for higher classes where period-wise attendance is maintained.</li>
+            <li><strong>Leave History Link:</strong> Quick link to approved/pending leave requests that correlate with absent days.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Attendance percentage below 75% triggers a warning indicator on the dashboard and monthly reports.</li>
+            <li>3 consecutive absent days without approved leave triggers a push notification + SMS to parent and an alert to class teacher.</li>
+            <li>Attendance can only be marked by assigned teacher or admin &mdash; parents have read-only access.</li>
+            <li>Late arrival threshold is configurable per school (default: 15 min after school start).</li>
+            <li>Attendance data is immutable after 48 hours unless modified by admin with audit trail.</li>
+          </ul>
+
+          <h4>Notifications Triggered</h4>
+          <div class="notification-list">
+            <div class="notif"><span class="notif-trigger">Absent Marked:</span> Instant push + optional SMS &mdash; "Your child [Name] has been marked absent today in Class [X]."</div>
+            <div class="notif"><span class="notif-trigger">Late Marked:</span> Push notification &mdash; "[Name] arrived late at [time]."</div>
+            <div class="notif"><span class="notif-trigger">Low Attendance:</span> Weekly digest if attendance drops below 80% &mdash; "[Name]'s attendance is [X]% this month."</div>
+            <div class="notif"><span class="notif-trigger">3-Day Absence:</span> Alert notification + SMS after 3 consecutive absences.</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- F3: Homework -->
+      <details class="feature" id="p-homework">
+        <summary>
+          <span class="feature-num">03</span>
+          <span class="feature-name">Homework</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>View all assigned homework, track completion status, submit work (photo/file upload), and receive due-date reminders. Replaces the physical homework diary with a digital, trackable, and searchable system.</p>
+
+          <h4>User Stories</h4>
+          <div class="user-story">"As a parent, I want to see all pending homework in one place so I can help my child complete it on time."</div>
+          <div class="user-story">"As a student, I want to submit my homework by taking a photo of my notebook so I don't have to type everything."</div>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Homework List View (default):</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Tabs: "Pending" | "Submitted" | "Evaluated" | "Overdue"</li>
+                <li>&#8226; Each item shows: Subject icon + name, homework title, assigned date, due date, teacher name</li>
+                <li>&#8226; Status badges: Pending (amber), Submitted (blue), Evaluated (green with grade), Overdue (red)</li>
+                <li>&#8226; Sort by: Due date (default) | Subject | Date assigned</li>
+              </ul>
+            </li>
+            <li><strong>Homework Detail View (tap to expand):</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Full description of the homework with formatting (bold, lists, etc.)</li>
+                <li>&#8226; Attachments from teacher (PDF worksheets, images, reference links)</li>
+                <li>&#8226; Submission area: Upload photo (camera/gallery), upload file (PDF/DOC), text input for typed answers</li>
+                <li>&#8226; Max file size indicator and supported formats</li>
+                <li>&#8226; Teacher's feedback/grade (after evaluation) with remarks</li>
+              </ul>
+            </li>
+            <li><strong>Subject Filter:</strong> Horizontal chips to filter by subject (All | Math | Science | English | Hindi | ...)</li>
+            <li><strong>Calendar View (toggle):</strong> Switch between list and calendar views to see homework mapped to dates.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Homework assigned after school hours appears in the app by 6 PM same day.</li>
+            <li>Submission allowed until 11:59 PM on the due date (configurable per school).</li>
+            <li>Late submissions are accepted but flagged as "Late" with a visual indicator.</li>
+            <li>Maximum 5 file uploads per homework, each up to 10 MB.</li>
+            <li>Supported formats: JPG, PNG, PDF, DOC, DOCX.</li>
+            <li>Once submitted, student can re-submit (overwrite) until the teacher starts evaluation.</li>
+            <li>Teacher must evaluate homework within 7 days (configurable), system sends reminders after 3 days.</li>
+          </ul>
+
+          <h4>Notifications Triggered</h4>
+          <div class="notification-list">
+            <div class="notif"><span class="notif-trigger">New Homework:</span> Push notification when teacher assigns &mdash; "New [Subject] homework: [Title]. Due: [Date]."</div>
+            <div class="notif"><span class="notif-trigger">Due Reminder:</span> Push at 6 PM one day before due date &mdash; "[Subject] homework due tomorrow."</div>
+            <div class="notif"><span class="notif-trigger">Overdue Alert:</span> Push at 8 AM day after due &mdash; "[Subject] homework is overdue."</div>
+            <div class="notif"><span class="notif-trigger">Evaluated:</span> Push when teacher grades &mdash; "Your [Subject] homework has been evaluated. Grade: [X]."</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- F4: Academic Progress -->
+      <details class="feature" id="p-academic">
+        <summary>
+          <span class="feature-num">04</span>
+          <span class="feature-name">Academic Progress</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Comprehensive academic performance tracking &mdash; marks, grades, report cards, subject-wise analysis, and term comparisons. Parents see not just the numbers but the trend and context.</p>
+
+          <h4>User Stories</h4>
+          <div class="user-story">"As a parent, I want to compare my child's performance across terms to see if they are improving."</div>
+          <div class="user-story">"As a parent, I want to download the report card as PDF to save or share."</div>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Performance Overview Card:</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Overall percentage / CGPA / Grade (based on school's grading system)</li>
+                <li>&#8226; Class rank (if school enables this)</li>
+                <li>&#8226; Term selector dropdown: "Term 1" | "Term 2" | "Annual" | "Unit Test 1" etc.</li>
+              </ul>
+            </li>
+            <li><strong>Subject-wise Marks Table:</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Columns: Subject, Marks Obtained, Total Marks, Percentage, Grade</li>
+                <li>&#8226; Color-coded rows: Green (>80%), Amber (50-80%), Red (<50%)</li>
+                <li>&#8226; Expandable rows to show marks breakdown (Theory, Practical, Internal Assessment)</li>
+              </ul>
+            </li>
+            <li><strong>Subject Radar Chart:</strong> Spider/radar chart showing performance across all subjects visually.</li>
+            <li><strong>Term Comparison Bar Chart:</strong> Side-by-side bars comparing Term 1 vs Term 2 per subject.</li>
+            <li><strong>Report Card View:</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Official digital report card with school branding</li>
+                <li>&#8226; Includes: Student details, marks, attendance summary, teacher remarks, principal remarks</li>
+                <li>&#8226; Co-scholastic grades (Art, Sports, Discipline, etc.)</li>
+                <li>&#8226; Download as PDF button</li>
+                <li>&#8226; Share button (WhatsApp, email)</li>
+              </ul>
+            </li>
+            <li><strong>Historical Trend:</strong> Year-over-year performance graph if student has been in the school for multiple years.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Marks are visible to parents only after the teacher/admin publishes them (not during entry).</li>
+            <li>Class rank display is configurable per school &mdash; some schools may choose to hide it.</li>
+            <li>Report card PDF generation uses the school's official template with digital watermark.</li>
+            <li>Grading system supports: Percentage, CGPA (10-point), Letter Grades (A+ to F), or custom as defined by the school.</li>
+            <li>Marks cannot be edited by teachers after admin locks the result; only admin can unlock.</li>
+          </ul>
+
+          <h4>Notifications Triggered</h4>
+          <div class="notification-list">
+            <div class="notif"><span class="notif-trigger">Results Published:</span> "Term 1 results are now available. View your child's report card."</div>
+            <div class="notif"><span class="notif-trigger">Low Performance Alert:</span> If any subject drops below 40% &mdash; "[Name] scored below passing in [Subject]. Please review."</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- F5: Fee Management -->
+      <details class="feature" id="p-fees">
+        <summary>
+          <span class="feature-num">05</span>
+          <span class="feature-name">Fee Management</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Complete fee lifecycle from the parent's perspective: view fee structure, check due amounts, pay online through integrated payment gateway, download receipts, and view payment history.</p>
+
+          <h4>User Stories</h4>
+          <div class="user-story">"As a parent, I want to pay school fees from the app via UPI/card/netbanking without visiting school."</div>
+          <div class="user-story">"As a parent, I want to download fee receipts for tax deduction and record-keeping."</div>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Fee Summary Card:</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Total annual fee, amount paid, balance remaining</li>
+                <li>&#8226; Visual progress bar showing % paid</li>
+                <li>&#8226; Next due amount and due date (prominently displayed)</li>
+                <li>&#8226; Overdue amount in red with days overdue</li>
+              </ul>
+            </li>
+            <li><strong>Fee Structure Breakdown:</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Table: Fee Head (Tuition, Transport, Lab, Library, etc.), Amount, Frequency (Monthly/Quarterly/Annual), Status</li>
+                <li>&#8226; Applicable discounts (sibling discount, scholarship, early-bird) shown as line items</li>
+                <li>&#8226; Late fee calculation displayed separately</li>
+              </ul>
+            </li>
+            <li><strong>Pay Now Flow:</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Select installment(s) to pay (checkboxes)</li>
+                <li>&#8226; Apply coupon/discount code (if applicable)</li>
+                <li>&#8226; Total amount with GST breakdown</li>
+                <li>&#8226; Payment methods: UPI (GPay, PhonePe, Paytm), Credit/Debit Card, Net Banking, EMI options</li>
+                <li>&#8226; Payment gateway integration (Razorpay / CCAvenue / PayU)</li>
+                <li>&#8226; Payment confirmation screen with transaction ID</li>
+              </ul>
+            </li>
+            <li><strong>Payment History:</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; List of all payments: Date, Amount, Payment Mode, Transaction ID, Status (Success/Failed/Pending)</li>
+                <li>&#8226; Download receipt for each payment (PDF)</li>
+                <li>&#8226; Filter by academic year</li>
+              </ul>
+            </li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Late fee starts accruing after the due date based on school's late fee policy (flat amount or daily/monthly percentage).</li>
+            <li>Partial payments are allowed &mdash; system tracks remaining balance per installment.</li>
+            <li>Payment receipt is auto-generated and emailed within 5 minutes of successful payment.</li>
+            <li>Failed payment attempts are logged and visible in payment history for troubleshooting.</li>
+            <li>Refunds follow a separate workflow &mdash; parent requests, admin approves, system processes.</li>
+            <li>Fee concessions/scholarships can only be applied by admin; parent sees the adjusted amount.</li>
+            <li>Duplicate payment detection: system prevents double-charge within a 5-minute window for the same installment.</li>
+          </ul>
+
+          <h4>Notifications Triggered</h4>
+          <div class="notification-list">
+            <div class="notif"><span class="notif-trigger">Fee Due Reminder:</span> 7 days before due date &mdash; "Fee of &#8377;[Amount] for [Term] is due on [Date]."</div>
+            <div class="notif"><span class="notif-trigger">Fee Overdue:</span> On due date + 1 day &mdash; "Fee payment of &#8377;[Amount] is overdue. Late fee may apply."</div>
+            <div class="notif"><span class="notif-trigger">Payment Success:</span> Instant &mdash; "Payment of &#8377;[Amount] received. Receipt: [ID]. Thank you!"</div>
+            <div class="notif"><span class="notif-trigger">Payment Failed:</span> Instant &mdash; "Payment of &#8377;[Amount] failed. Please try again."</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- F6: School Notices -->
+      <details class="feature" id="p-notices">
+        <summary>
+          <span class="feature-num">06</span>
+          <span class="feature-name">School Notices</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Centralized notice board for all school communications &mdash; circulars, announcements, holiday declarations, event notices. Replaces physical circulars and WhatsApp group chaos with a structured, searchable system.</p>
+
+          <h4>User Stories</h4>
+          <div class="user-story">"As a parent, I want all school notices in one place so I don't miss important information buried in WhatsApp groups."</div>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Notice Feed:</strong> Chronological list with category filters (All | Holiday | Exam | Event | Circular | Fee | General). Each notice shows: Title, date posted, category tag, priority indicator (pinned/normal), read/unread status.</li>
+            <li><strong>Notice Detail:</strong> Full content with rich text formatting. Attached files (PDF circular, images). Action buttons where applicable (e.g., "RSVP for event", "Acknowledge receipt"). Share button (WhatsApp, save to phone).</li>
+            <li><strong>Search &amp; Filter:</strong> Full-text search across all notices. Filter by category, date range.</li>
+            <li><strong>Acknowledgement Tracking:</strong> For critical notices, admin can require "Read &amp; Acknowledged" confirmation. Parent taps "I Acknowledge" button.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Notices can be targeted: All parents, specific class, specific section, individual parent.</li>
+            <li>Priority notices stay pinned at the top until expiry date.</li>
+            <li>Admin can see read receipts: how many parents read / acknowledged each notice.</li>
+            <li>Notices older than 1 academic year are archived but searchable.</li>
+          </ul>
+
+          <h4>Notifications Triggered</h4>
+          <div class="notification-list">
+            <div class="notif"><span class="notif-trigger">New Notice:</span> Push for all targeted parents &mdash; "New notice: [Title]"</div>
+            <div class="notif"><span class="notif-trigger">Priority Notice:</span> Push + SMS for urgent notices</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- F7: Leave Request -->
+      <details class="feature" id="p-leave">
+        <summary>
+          <span class="feature-num">07</span>
+          <span class="feature-name">Leave Request</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Digital leave application system. Parents apply for their child's leave from the app, teachers/admins approve or reject, and the absence is auto-linked to attendance records.</p>
+
+          <h4>User Stories</h4>
+          <div class="user-story">"As a parent, I want to apply for my child's leave from the app instead of writing a letter."</div>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Apply Leave Form:</strong> Leave type dropdown (Sick, Personal, Family Emergency, Religious, Other). Date picker: From date &amp; To date. Reason text area (required, min 10 characters). Attach supporting document (medical certificate, etc.) &mdash; optional. Submit button.</li>
+            <li><strong>Leave History:</strong> List of all leave requests with status: Pending (amber), Approved (green), Rejected (red), Cancelled (grey). Each shows: Date range, type, reason summary, approved/rejected by, remarks from teacher.</li>
+            <li><strong>Leave Balance (if school tracks):</strong> Medical leave, casual leave &mdash; used vs remaining.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Leave cannot be applied for past dates older than 2 days (configurable).</li>
+            <li>Approval flow: Class Teacher approves ≤3 days, Admin approves &gt;3 days.</li>
+            <li>Approved leave auto-marks attendance as "On Leave" for those dates.</li>
+            <li>Parent can cancel a pending request but not an approved one.</li>
+            <li>Medical leave &gt;2 days requires medical certificate attachment.</li>
+          </ul>
+
+          <h4>Notifications Triggered</h4>
+          <div class="notification-list">
+            <div class="notif"><span class="notif-trigger">Submitted:</span> Push to parent (confirmation) + Push to teacher (action needed)</div>
+            <div class="notif"><span class="notif-trigger">Approved/Rejected:</span> Push to parent &mdash; "Leave request for [Dates] has been [approved/rejected]. Remarks: [...]"</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- F8: Timetable -->
+      <details class="feature" id="p-timetable">
+        <summary>
+          <span class="feature-num">08</span>
+          <span class="feature-name">Timetable</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>View the child's class timetable (daily &amp; weekly) and exam schedule. Shows what's happening today and what's coming up.</p>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Daily View (default):</strong> Period-wise list for today: Period number, time slot (8:00-8:40), subject name, teacher name. Current period highlighted. Break/Lunch shown as special rows. Substitution teacher highlighted in a different color.</li>
+            <li><strong>Weekly View:</strong> Grid layout &mdash; rows are periods, columns are days. Subject name and teacher in each cell. Color-coded by subject.</li>
+            <li><strong>Exam Schedule:</strong> Upcoming exams listed: Date, subject, time, syllabus/topics covered, exam type (Unit Test / Mid-term / Final). Countdown to next exam.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Timetable changes (substitution) reflect in real-time when admin updates.</li>
+            <li>Exam schedule published at least 2 weeks before exams.</li>
+            <li>Historical timetables not retained &mdash; only current and future shown.</li>
+          </ul>
+
+          <h4>Notifications Triggered</h4>
+          <div class="notification-list">
+            <div class="notif"><span class="notif-trigger">Timetable Changed:</span> Push if any period changes &mdash; "Timetable updated for [Day]. [Subject] now at Period [X]."</div>
+            <div class="notif"><span class="notif-trigger">Exam Reminder:</span> 2 days before each exam &mdash; "[Subject] exam on [Date] at [Time]."</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- F9: Transport Tracking -->
+      <details class="feature" id="p-transport">
+        <summary>
+          <span class="feature-num">09</span>
+          <span class="feature-name">Transport Tracking</span>
+          <span class="tag should">Should Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Real-time GPS tracking of the school bus. Parents can see where the bus is, get ETA for pickup/drop, and receive alerts when the child boards or alights.</p>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Live Map:</strong> Map view showing bus location in real-time (updates every 10-15 seconds). Child's pickup/drop point marked. Route path displayed. ETA to pickup/drop point.</li>
+            <li><strong>Bus Info Card:</strong> Bus number, driver name &amp; phone, route name/number, attendant name &amp; phone.</li>
+            <li><strong>Status Timeline:</strong> Bus started, Reached stop 1, ... , Reached school. Shows completed vs upcoming stops.</li>
+            <li><strong>Boarding Status:</strong> "Boarded" / "Dropped" status when child taps RFID or driver marks manually.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>GPS tracking active only during school bus operation hours (configurable).</li>
+            <li>If GPS signal is lost for &gt;5 minutes, show "Last known location" with timestamp.</li>
+            <li>Parent can only see their child's assigned bus, not all school buses.</li>
+            <li>Driver can mark child as boarded/dropped if RFID is not available.</li>
+            <li>Speed alert: If bus exceeds speed limit (configurable, default 40 kmph in school zones), admin is notified.</li>
+          </ul>
+
+          <h4>Notifications Triggered</h4>
+          <div class="notification-list">
+            <div class="notif"><span class="notif-trigger">Bus Started:</span> "School bus has started from school/depot."</div>
+            <div class="notif"><span class="notif-trigger">Approaching:</span> "Bus is 5 minutes away from your stop."</div>
+            <div class="notif"><span class="notif-trigger">Boarded:</span> "[Name] has boarded the bus."</div>
+            <div class="notif"><span class="notif-trigger">Dropped:</span> "[Name] has been dropped at [Stop]."</div>
+            <div class="notif"><span class="notif-trigger">Delay:</span> "Bus is running [X] minutes late due to [reason/traffic]."</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- F10: Parent-Teacher Chat -->
+      <details class="feature" id="p-chat">
+        <summary>
+          <span class="feature-num">10</span>
+          <span class="feature-name">Parent-Teacher Chat</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Secure, in-app messaging between parents and teachers. Replaces personal WhatsApp communication with a professional, auditable channel that respects teacher boundaries.</p>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Chat List:</strong> List of conversations with teachers. Shows teacher name, subject taught, last message preview, timestamp, unread count badge. Class teacher pinned at top.</li>
+            <li><strong>Chat Window:</strong> Standard messaging UI: text messages, image sharing, file sharing (PDF, DOC), voice notes (up to 2 minutes). Read receipts (sent / delivered / read). Reply-to-message for context.</li>
+            <li><strong>Available Hours Indicator:</strong> Green dot if teacher is available, grey if outside available hours.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Parents can only chat with teachers assigned to their child's class &mdash; not any teacher in the school.</li>
+            <li>Teachers can set available hours (e.g., 9 AM - 4 PM). Messages sent outside hours are delivered but marked "Will respond during school hours."</li>
+            <li>No group chats in Phase 1 &mdash; only 1-on-1 parent-teacher conversations.</li>
+            <li>Admin can view chat transcripts for moderation if needed (visible to both parties that chats are monitored).</li>
+            <li>Auto-delete messages older than 1 academic year.</li>
+            <li>Inappropriate language filter (basic) with escalation to admin.</li>
+          </ul>
+
+          <h4>Notifications Triggered</h4>
+          <div class="notification-list">
+            <div class="notif"><span class="notif-trigger">New Message:</span> Push notification &mdash; "[Teacher Name]: [Message preview]"</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- F11: Document Vault -->
+      <details class="feature" id="p-vault">
+        <summary>
+          <span class="feature-num">11</span>
+          <span class="feature-name">Document Vault</span>
+          <span class="tag should">Should Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Secure digital storage for all student-related documents. School uploads official documents; parents can access, download, and share anytime.</p>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Document Categories:</strong> Report Cards, Fee Receipts, Certificates (Merit, Sports, Participation), Transfer Certificate, Character Certificate, ID Card, Medical Records. Each category shows document count.</li>
+            <li><strong>Document List per Category:</strong> Document name, upload date, uploaded by (School/Teacher), file size, file type icon (PDF/Image). Actions: View, Download, Share (WhatsApp/Email).</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Parents can only view/download &mdash; they cannot upload to the vault (school-managed).</li>
+            <li>Documents are retained for 5 years after student leaves the school.</li>
+            <li>Maximum storage per student: 500 MB.</li>
+            <li>Sensitive documents (TC, Character Certificate) require admin approval before parent can download.</li>
+          </ul>
+
+          <h4>Notifications Triggered</h4>
+          <div class="notification-list">
+            <div class="notif"><span class="notif-trigger">New Document:</span> "A new document has been added to [Name]'s vault: [Document Name]."</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- F12: Event Gallery -->
+      <details class="feature" id="p-gallery">
+        <summary>
+          <span class="feature-num">12</span>
+          <span class="feature-name">Event Gallery</span>
+          <span class="tag nice">Nice to Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Photo and video gallery organized by school events. Parents can see their child participating in events, download media, and share with family.</p>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Event Albums:</strong> Grid of event albums with cover photo, event name, date, photo/video count. Sorted newest first.</li>
+            <li><strong>Album View:</strong> Grid of photos/thumbnails. Tap to full-screen view with swipe navigation. Video playback with streaming (not download). Download individual or bulk download.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Only teachers and admin can upload to the gallery.</li>
+            <li>Photos are compressed for app display but original quality available for download.</li>
+            <li>Video max duration: 5 minutes per video, max 10 videos per event.</li>
+            <li>Content moderation: Admin approves photos before they become visible to parents.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- F13: AI Assistant -->
+      <details class="feature" id="p-ai">
+        <summary>
+          <span class="feature-num">13</span>
+          <span class="feature-name">AI Assistant</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Conversational AI chatbot that answers parent queries in natural language. Instead of navigating through menus, parents simply ask questions and get instant answers pulled from their child's actual data.</p>
+
+          <h4>User Stories</h4>
+          <div class="user-story">"As a parent, I want to ask 'Is homework pending?' and get a direct answer instead of navigating to the homework section."</div>
+          <div class="user-story">"As a parent, I want to ask in Hindi 'Meri beti ka result kab aayega?' and get a response."</div>
+
+          <h4>How It Works</h4>
+          <p>The AI does <strong>not</strong> use pre-trained general knowledge to answer school queries. It is a <strong>Retrieval-Augmented Generation (RAG)</strong> system that pulls data from the school's actual database and formulates natural-language responses.</p>
+
+          <h4>Supported Query Categories</h4>
+          <ul>
+            <li><strong>Attendance:</strong> "Was my child present today?" / "What is the attendance this month?" / "How many days absent?"</li>
+            <li><strong>Homework:</strong> "Any pending homework?" / "What is the Math homework?" / "When is Science homework due?"</li>
+            <li><strong>Fees:</strong> "How much fee is pending?" / "When is the next fee due?" / "Show my payment history"</li>
+            <li><strong>Exams:</strong> "When is the next exam?" / "What subjects are in the exam?" / "Show Term 1 results"</li>
+            <li><strong>Timetable:</strong> "What classes are today?" / "When is the Science period?" / "Any class change tomorrow?"</li>
+            <li><strong>Notices:</strong> "Any new notices?" / "Is there a holiday this week?" / "What events are coming up?"</li>
+            <li><strong>Transport:</strong> "Where is the bus?" / "When will the bus reach?" / "Who is the bus driver?"</li>
+            <li><strong>General:</strong> "What are school timings?" / "What is the school phone number?" / "Who is the class teacher?"</li>
+          </ul>
+
+          <h4>Language Support</h4>
+          <ul>
+            <li>English and Hindi (Phase 1)</li>
+            <li>Hinglish (mixed Hindi-English) supported naturally</li>
+            <li>Auto-detects language from input and responds in the same language</li>
+          </ul>
+
+          <h4>Fallback Behavior</h4>
+          <ul>
+            <li>If AI cannot answer: "I don't have this information. Would you like to chat with the class teacher?"</li>
+            <li>If query is outside school scope: "I can only help with school-related questions."</li>
+            <li>If data is unavailable: "This information hasn't been updated yet. Please check back later."</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>AI only accesses data the parent is authorized to see (their own child's data).</li>
+            <li>No cross-student data leakage: Parent A cannot ask about Parent B's child.</li>
+            <li>Conversation history retained for 30 days for context.</li>
+            <li>Rate limit: 50 queries per parent per day.</li>
+            <li>Response time target: &lt;3 seconds for text responses.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- F14: Daily Summary -->
+      <details class="feature" id="p-summary">
+        <summary>
+          <span class="feature-num">14</span>
+          <span class="feature-name">Daily Summary</span>
+          <span class="tag should">Should Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>A single consolidated notification sent every evening summarizing the child's entire day &mdash; so parents who don't check the app frequently get a one-stop overview.</p>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Daily Summary Notification (Push + In-App Card):</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Attendance: Present/Absent/Late with check-in time</li>
+                <li>&#8226; Homework: New assignments given today (count &amp; subjects). Pending submissions count.</li>
+                <li>&#8226; Announcements: Any new notices posted today (titles).</li>
+                <li>&#8226; Exams: If any exam is within next 3 days, show reminder.</li>
+                <li>&#8226; Fee: If fee is due within 7 days, show reminder.</li>
+                <li>&#8226; Teacher Remarks: If any teacher left a remark today.</li>
+              </ul>
+            </li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Sent at 6:00 PM every school day (time configurable per school).</li>
+            <li>Not sent on holidays/weekends/vacations.</li>
+            <li>Parent can opt out of daily summary (but cannot opt out of emergency alerts).</li>
+            <li>Summary is AI-generated: natural language, not raw data points. e.g., "[Name] had a great day! Present on time, 2 new homework assignments in Math and Science, and the school announced a holiday on Friday."</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- F15: Emergency Alerts -->
+      <details class="feature" id="p-emergency">
+        <summary>
+          <span class="feature-num">15</span>
+          <span class="feature-name">Emergency Alerts</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>High-priority, non-dismissible alerts for critical situations. Bypasses all notification preferences &mdash; parents always receive these.</p>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Full-screen Alert Overlay:</strong> When app is open, shows a red full-screen alert that must be manually dismissed.</li>
+            <li><strong>Alert Content:</strong> Emergency type (Safety, Medical, Weather, Operational), details text, action instructions, school contact number, timestamp.</li>
+          </ul>
+
+          <h4>Emergency Types</h4>
+          <ul>
+            <li><strong>Safety:</strong> Lockdown, fire drill, security incident</li>
+            <li><strong>Medical:</strong> Child injury/illness, epidemic advisory</li>
+            <li><strong>Weather:</strong> School closure due to weather, early dismissal</li>
+            <li><strong>Operational:</strong> Bus breakdown, water/power outage, schedule change</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Only Super Admin and Principal can trigger emergency alerts.</li>
+            <li>Sent via ALL channels simultaneously: Push + SMS + WhatsApp + Email.</li>
+            <li>Cannot be muted or silenced by parent's notification preferences.</li>
+            <li>Delivery confirmation required &mdash; system retries via SMS if push delivery fails within 2 minutes.</li>
+            <li>Emergency alert history maintained for compliance and audit.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MODULE 2: TEACHER -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="module-section teacher" id="module-teacher">
+      <div class="module-header">
+        <div class="module-badge teacher">T</div>
+        <h2 class="module-title">Module 2 &mdash; Teacher</h2>
+      </div>
+      <p class="module-desc">Designed for teachers to manage their daily tasks efficiently. Every feature is optimized for quick action &mdash; teachers are busy, so the app must save time, not add work. The AI assistant is a force multiplier here, generating content that teachers typically spend hours writing manually.</p>
+
+      <!-- T1: Dashboard -->
+      <details class="feature" id="t-dashboard">
+        <summary>
+          <span class="feature-num">01</span>
+          <span class="feature-name">Teacher Dashboard</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Teacher's home screen. Shows today's teaching schedule, pending tasks, and important updates. Designed as a morning briefing &mdash; teacher opens the app and knows exactly what their day looks like.</p>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Today's Classes Timeline:</strong> Period-wise schedule: period number, time, class &amp; section, subject. Current/next period highlighted. Shows room number if applicable.</li>
+            <li><strong>Pending Tasks Card:</strong> Count of: Attendance not marked (which classes), Homework not evaluated (count), Marks not entered. Each is tappable &mdash; goes directly to the action screen.</li>
+            <li><strong>Recent Announcements:</strong> Latest 3 school-wide announcements relevant to this teacher.</li>
+            <li><strong>Quick Stats:</strong> Total students across all classes, Average attendance today, Pending leave requests to approve.</li>
+            <li><strong>Quick Actions:</strong> "Mark Attendance", "Assign Homework", "Send Message to Parents" &mdash; 3 primary action buttons.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Dashboard shows only classes assigned to this teacher.</li>
+            <li>Pending tasks are sorted by urgency (overdue first, then due today).</li>
+            <li>Dashboard reflects substitution assignments in real-time.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- T2: Attendance Management -->
+      <details class="feature" id="t-attendance">
+        <summary>
+          <span class="feature-num">02</span>
+          <span class="feature-name">Attendance Management</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Mark attendance for an entire class in under 2 minutes. Defaults to "present" for all students &mdash; teacher only marks exceptions (absent/late). Instant notification goes to parents of absent students.</p>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Class Selector:</strong> Dropdown or tabs showing assigned classes. Auto-selects current period's class.</li>
+            <li><strong>Student List:</strong> Roll number, student name, photo thumbnail. Default state: all marked "Present" (green). Tap to toggle: Present → Absent → Late → Present. Bulk actions: "Mark All Present", "Mark All Absent".</li>
+            <li><strong>Summary Bar (sticky bottom):</strong> Total: [X] | Present: [X] | Absent: [X] | Late: [X]. Submit button with confirmation.</li>
+            <li><strong>Previous Attendance View:</strong> View/edit attendance for past dates (within edit window). Calendar picker to select date.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Attendance can only be marked during the scheduled period or within 30 minutes after (configurable).</li>
+            <li>Once submitted, can be edited within 48 hours by the same teacher or admin.</li>
+            <li>Each submission creates an audit log: who marked, when, any changes.</li>
+            <li>If teacher doesn't mark attendance by period end + 30 min, a reminder notification is sent.</li>
+            <li>Period-wise attendance (for higher classes) vs daily attendance (for lower classes) &mdash; configurable per school.</li>
+          </ul>
+
+          <h4>Notifications Triggered</h4>
+          <div class="notification-list">
+            <div class="notif"><span class="notif-trigger">To Parents:</span> Instant push when child marked absent/late.</div>
+            <div class="notif"><span class="notif-trigger">To Teacher (reminder):</span> "Attendance not marked for Class [X] Period [Y]."</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- T3: Homework Management -->
+      <details class="feature" id="t-homework">
+        <summary>
+          <span class="feature-num">03</span>
+          <span class="feature-name">Homework Management</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Create, assign, review, and grade homework. AI can generate homework questions based on the topic/chapter. Track submission rates and evaluate student work.</p>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Create Homework Form:</strong> Class &amp; Section selector (multi-select for same homework across sections). Subject (auto-filled based on teacher's assignment). Title, description (rich text editor). Attachments: upload PDF, images, reference material. Due date picker. Max marks (optional). "Generate with AI" button &mdash; enter topic, AI suggests questions.</li>
+            <li><strong>Homework List:</strong> All assigned homework with: Title, class, due date, submission stats (15/45 submitted), evaluation status. Filter: Active | Past | Draft.</li>
+            <li><strong>Submission Review Screen:</strong> List of students with submission status: Submitted (with timestamp), Not Submitted, Late Submitted. Tap student to view their submission. Grading: enter marks/grade + text remarks. Bulk grade option for quick evaluation.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Homework notification sent to all parents in the selected class immediately upon assignment.</li>
+            <li>Teacher can set homework as "Graded" (marks/grade required) or "Completion-based" (just submitted/not).</li>
+            <li>AI-generated homework requires teacher review before publishing.</li>
+            <li>Homework can be duplicated to assign same content to another class/section.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- T4: Exam & Marks -->
+      <details class="feature" id="t-exam">
+        <summary>
+          <span class="feature-num">04</span>
+          <span class="feature-name">Exam &amp; Marks Entry</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Enter exam marks for each student, view class analytics, and generate report cards. Supports multiple exam types (Unit Test, Mid-Term, Final) and marking schemes.</p>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>Exam Selector:</strong> Choose exam type → class → section → subject.</li>
+            <li><strong>Marks Entry Grid:</strong> Spreadsheet-like grid: rows = students (roll number order), columns = marks fields (Theory, Practical, Internal, Total). Auto-calculate total and grade. Color-code: Red if below passing marks. Tab/Enter to move between cells for quick entry. Save draft (partial entry) + Submit final.</li>
+            <li><strong>Class Analytics (after entry):</strong> Highest, lowest, average marks. Pass/fail count. Grade distribution chart. Top 5 / Bottom 5 students.</li>
+            <li><strong>Report Card Generation:</strong> Select term → auto-compiles all subject marks. Teacher remarks field per student. AI-generated remarks suggestion (based on performance data). Preview report card before publishing.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Marks entry is subject-locked to the assigned subject teacher &mdash; Math teacher can't enter Science marks.</li>
+            <li>Once submitted, marks are locked. Only admin can unlock for corrections.</li>
+            <li>Report cards are only visible to parents after admin clicks "Publish Results."</li>
+            <li>Grading thresholds are defined at school level (e.g., A+ = 90-100, A = 80-89).</li>
+            <li>Absent students are marked "AB" &mdash; they get a zero unless admin assigns supplementary marks.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- T5: Class Timetable -->
+      <details class="feature" id="t-timetable">
+        <summary>
+          <span class="feature-num">05</span>
+          <span class="feature-name">Class Timetable</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Teacher's personal timetable showing their teaching schedule across all assigned classes.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Today View:</strong> Period-wise list with class, section, subject, room. Current period highlighted with a "Mark Attendance" quick action.</li>
+            <li><strong>Week View:</strong> Grid layout showing all periods across the week. Free periods shown distinctly.</li>
+            <li><strong>Substitution Indicator:</strong> If teacher has a substitution, it appears in a different color with the original teacher's name.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Timetable is read-only for teachers &mdash; only admin can create/edit.</li>
+            <li>Substitutions assigned by admin appear in real-time with a notification.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- T6: Parent Communication -->
+      <details class="feature" id="t-parent-comm">
+        <summary>
+          <span class="feature-num">06</span>
+          <span class="feature-name">Parent Communication</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Teacher side of the parent-teacher chat. Additionally allows sending bulk updates to all parents of a class.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Chat List:</strong> All active conversations with parents, sorted by recent. Unread count badge. Student name shown alongside parent name for context.</li>
+            <li><strong>Bulk Message:</strong> Compose a message → select recipients (entire class / specific students' parents) → send. Supports text + image + file. Delivered as individual messages, not a group.</li>
+            <li><strong>Available Hours Setting:</strong> Set daily available hours for chat. Auto-response outside hours: "I will respond during school hours."</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Teacher sees only parents of students in their assigned classes.</li>
+            <li>Bulk messages cannot exceed 500 characters (to keep them concise).</li>
+            <li>Teacher can mute notifications from individual parents (still receives messages, just no sound/vibration).</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- T7: Announcements -->
+      <details class="feature" id="t-announcements">
+        <summary>
+          <span class="feature-num">07</span>
+          <span class="feature-name">Announcements</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Create and share class-level notices and reminders. Unlike admin announcements (school-wide), teacher announcements are scoped to their class.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Create Announcement:</strong> Title, body (rich text), category (Reminder/Notice/Event), target audience (specific class/all assigned classes), attachment support, priority toggle, schedule for later option.</li>
+            <li><strong>Sent Announcements:</strong> List with read stats (e.g., "32/45 parents read"). Tap to see which parents haven't read yet.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Teacher announcements are limited to their assigned classes only.</li>
+            <li>Priority announcements require admin approval before sending.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- T8: Study Material -->
+      <details class="feature" id="t-material">
+        <summary>
+          <span class="feature-num">08</span>
+          <span class="feature-name">Study Material</span>
+          <span class="tag should">Should Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Upload and organize teaching resources &mdash; notes, PDFs, videos, and assignments &mdash; for students and parents to access.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Material Library:</strong> Organized by: Subject → Chapter/Topic → Resource type. Each resource shows: title, type icon (PDF/Video/Doc/Image), file size, upload date, view count.</li>
+            <li><strong>Upload Flow:</strong> Select class → subject → chapter. Title and description. Upload file (max 50 MB) or paste video link (YouTube only in Phase 1). Visibility: All students / Specific sections.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Max storage per teacher: 2 GB.</li>
+            <li>Video files are not stored on platform &mdash; only YouTube links (to save storage).</li>
+            <li>Material is accessible to parents/students only after "Publish" &mdash; draft state available.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- T9: Leave Management -->
+      <details class="feature" id="t-leave">
+        <summary>
+          <span class="feature-num">09</span>
+          <span class="feature-name">Leave Management</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Teachers apply for their own leave and also approve/reject student leave requests.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>My Leave Tab:</strong> Apply leave form: type (Casual/Sick/Earned/Maternity), dates, reason, substitute teacher suggestion. Leave balance display. Leave history with status.</li>
+            <li><strong>Student Leave Tab:</strong> Pending requests from parents. Each shows: student name, dates, type, reason, attachment. Approve / Reject with optional remarks. Auto-notification to parent on action.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Teacher leave approval: Class teacher → Head of Department → Principal (configurable flow).</li>
+            <li>Student leave ≤3 days: Class teacher approves. &gt;3 days: Escalated to admin.</li>
+            <li>If teacher is on approved leave, their classes show as "Substitution Needed" to admin.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- T10: Student Performance -->
+      <details class="feature" id="t-performance">
+        <summary>
+          <span class="feature-num">10</span>
+          <span class="feature-name">Student Performance</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Holistic view of each student's performance &mdash; attendance, marks, homework completion &mdash; all in one profile card. Helps teachers identify at-risk students.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Class Student List:</strong> Select class → see all students with quick indicators: Attendance %, last exam grade, homework completion rate. Sort/filter by any metric. Color-coded rows: Red (needs attention), Amber (moderate), Green (good).</li>
+            <li><strong>Student Detail Card:</strong> Photo, name, roll number, parent contact. Attendance trend (last 3 months chart). Subject-wise marks (last 2 exams comparison). Homework submission rate. Teacher's private notes about the student (visible only to teachers).</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Teacher can only view students in their assigned classes.</li>
+            <li>Private notes are visible to all teachers of that class, not to parents or students.</li>
+            <li>At-risk indicators: Attendance &lt;75% OR any subject &lt;40% OR homework completion &lt;50%.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- T11: Lesson Planner -->
+      <details class="feature" id="t-planner">
+        <summary>
+          <span class="feature-num">11</span>
+          <span class="feature-name">Task &amp; Lesson Planner</span>
+          <span class="tag should">Should Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Plan daily lessons, track syllabus progress, and manage teaching tasks. Helps teachers stay organized and gives admins visibility into syllabus completion.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Syllabus Tracker:</strong> Subject → list of chapters/topics. Each topic: Planned date, actual completion date, status (Not Started / In Progress / Completed). Progress bar showing overall syllabus completion %.</li>
+            <li><strong>Daily Lesson Plan:</strong> For each period: Topic to cover, learning objectives, teaching method, resources needed, homework to assign. AI can suggest lesson plans based on topic and class level.</li>
+            <li><strong>Task List:</strong> Personal to-do list: "Evaluate Class 8A homework", "Prepare Unit Test paper", "Submit marks by Friday". Due dates, priority, completion checkbox.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Syllabus completion data visible to HOD and admin for monitoring.</li>
+            <li>Lesson plans are optional in Phase 1 but encouraged.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- T12: AI Assistant -->
+      <details class="feature" id="t-ai">
+        <summary>
+          <span class="feature-num">12</span>
+          <span class="feature-name">AI Assistant (Teacher)</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>The teacher's AI is a <strong>content generation powerhouse</strong>, unlike the parent's AI which is primarily a data query tool. This AI creates teaching content, saving teachers hours of work.</p>
+
+          <h4>AI Capabilities for Teachers</h4>
+          <ul>
+            <li><strong>Homework Generator:</strong> Input: subject, class, topic/chapter, difficulty level, number of questions. Output: Questions with answer key. Types: MCQ, short answer, long answer, fill in the blanks, match the following. Teacher reviews, edits, and publishes.</li>
+            <li><strong>Quiz Generator:</strong> Input: topic, number of questions, time limit. Output: Interactive quiz with auto-grading (MCQ-based). Can be assigned as class activity or homework.</li>
+            <li><strong>Lesson Plan Generator:</strong> Input: subject, class, topic, duration (1 period / 2 periods). Output: Structured lesson plan with objectives, activities, discussion points, assessment ideas.</li>
+            <li><strong>Report Card Remarks:</strong> Input: Student's marks across subjects, attendance %, homework completion %. Output: Personalized, professional remarks. Example: "Riya has shown consistent improvement in Mathematics. Her attendance of 95% reflects her dedication. She should focus on improving in Science, particularly in practical experiments."</li>
+            <li><strong>Question Paper Generator:</strong> Input: subject, class, syllabus topics, marks distribution, question types. Output: Complete question paper with marking scheme. Follows school's paper pattern.</li>
+            <li><strong>Study Material Summarizer:</strong> Upload a chapter PDF → AI generates key points summary for students.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>All AI-generated content is marked as "AI Draft" and requires teacher approval before publishing.</li>
+            <li>AI uses the school's curriculum/textbook mapping for accurate content generation.</li>
+            <li>Generated content quality improves over time as teachers edit and accept/reject suggestions (feedback loop).</li>
+            <li>Rate limit: 100 AI generations per teacher per day.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- T13-T15: Compact -->
+      <details class="feature" id="t-gallery">
+        <summary>
+          <span class="feature-num">13</span>
+          <span class="feature-name">Class Gallery</span>
+          <span class="tag nice">Nice to Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Upload classroom and event photos for parents to view. Creates a visual record of school activities.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li>Camera integration for quick photo capture and upload.</li>
+            <li>Create album: Event name, date, description. Bulk upload (up to 50 photos per album). Auto-compress for app delivery.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Photos go through admin moderation queue before becoming visible to parents (configurable).</li>
+            <li>Max 50 photos per album, max 10 MB per photo.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="feature" id="t-notifs">
+        <summary>
+          <span class="feature-num">14</span>
+          <span class="feature-name">Notifications</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Centralized notification center for all teacher-relevant alerts.</p>
+          <h4>Notification Types</h4>
+          <ul>
+            <li>Meeting reminders (PTM, staff meeting)</li>
+            <li>Exam schedule alerts</li>
+            <li>Pending task reminders (unmarked attendance, unevaluated homework)</li>
+            <li>Parent message notifications</li>
+            <li>Leave request from students</li>
+            <li>Admin announcements</li>
+            <li>Substitution assignments</li>
+            <li>Salary/payslip notifications</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Notifications are categorized: Urgent (red dot), Action Needed (amber), Informational (blue).</li>
+            <li>Teacher can set quiet hours for non-urgent notifications.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="feature" id="t-docs">
+        <summary>
+          <span class="feature-num">15</span>
+          <span class="feature-name">Document Management</span>
+          <span class="tag should">Should Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Access teaching resources and official school documents shared by admin.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>School Documents:</strong> Academic calendar, school policies, exam schedules, holiday list, salary slips.</li>
+            <li><strong>Teaching Resources:</strong> Shared curriculum guides, textbook PDFs, reference materials uploaded by HOD/admin.</li>
+            <li><strong>Personal Documents:</strong> Teacher's own uploaded documents (ID, certificates, appointment letter).</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>School documents are read-only for teachers.</li>
+            <li>Personal documents section has 200 MB storage limit per teacher.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MODULE 3: SUPER ADMIN -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="module-section admin" id="module-admin">
+      <div class="module-header">
+        <div class="module-badge admin">A</div>
+        <h2 class="module-title">Module 3 &mdash; Super Admin</h2>
+      </div>
+      <p class="module-desc">The command center for school management. Admins configure, monitor, and control every aspect of the school through this module. Desktop-first design with responsive support. Features data-heavy dashboards with drill-down capability.</p>
+
+      <!-- A1: School Dashboard -->
+      <details class="feature" id="a-dashboard">
+        <summary>
+          <span class="feature-num">01</span>
+          <span class="feature-name">School Dashboard</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Executive overview of the entire school. At a glance: how many students are present, how is fee collection going, are there any issues that need attention. Designed for the principal's morning review.</p>
+
+          <h4>UI Components &amp; Data Displayed</h4>
+          <ul>
+            <li><strong>KPI Cards (top row):</strong>
+              <ul style="list-style:none; padding-left:18px; margin-top:4px;">
+                <li>&#8226; Total Students (with change vs last year)</li>
+                <li>&#8226; Today's Attendance % (with sparkline for last 7 days)</li>
+                <li>&#8226; Fee Collection this Month (&#8377; amount, % of target)</li>
+                <li>&#8226; Total Teachers / Staff (present today count)</li>
+                <li>&#8226; Pending Approvals (leaves, fee concessions)</li>
+              </ul>
+            </li>
+            <li><strong>Attendance Heatmap:</strong> Class-wise attendance for today: grid showing each class's attendance %. Red cells for classes below 80%. Click to drill down to student list.</li>
+            <li><strong>Fee Collection Progress:</strong> Bar chart: Monthly collection target vs actual. Table: Top 10 fee defaulters with amount and days overdue.</li>
+            <li><strong>Recent Activity Feed:</strong> Timeline of recent actions: "Class 5A attendance marked by Mrs. Sharma", "New admission: Rohan Kumar to Class 3B", "Fee payment received: &#8377;15,000 from Mr. Gupta".</li>
+            <li><strong>Quick Actions:</strong> Send Announcement, Add Student, View Reports, Generate Report Card.</li>
+          </ul>
+
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Dashboard data refreshes every 2 minutes.</li>
+            <li>KPI cards show comparison with same period last year (if data exists).</li>
+            <li>Drill-down from any card leads to the detailed module.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- A2: Student Management -->
+      <details class="feature" id="a-students">
+        <summary>
+          <span class="feature-num">02</span>
+          <span class="feature-name">Student Management</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Complete student lifecycle management: admission, enrollment, profile management, class assignment, transfer, and alumni tracking.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Student Directory:</strong> Searchable, filterable list of all students. Columns: Photo, Name, Class &amp; Section, Roll No, Parent Name, Phone, Status (Active/Transferred/Alumni). Filters: Class, Section, Gender, Status, Admission Year. Export to Excel.</li>
+            <li><strong>Add Student Form:</strong> Personal info: Name, DOB, Gender, Blood Group, Aadhaar (optional), Photo. Parent/Guardian info: Father/Mother/Guardian name, phone, email, occupation, address. Academic info: Class, Section, Roll No, Previous School, TC number. Transport: Bus route, stop. Fee: Fee plan, discounts/scholarships.</li>
+            <li><strong>Student Profile:</strong> All information in one view. Quick links to: Attendance, Marks, Fee status, Parent contact. Edit capability. Transfer/Remove student (with TC generation).</li>
+            <li><strong>Bulk Operations:</strong> Bulk import students via Excel. Promote students to next class (year-end). Section reallocation.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Student ID (admission number) is auto-generated and unique across the school.</li>
+            <li>Deleting a student is soft-delete &mdash; data is retained but student is marked inactive.</li>
+            <li>Transfer generates a TC (Transfer Certificate) that goes to Document Vault.</li>
+            <li>Parent account is auto-created when student is added &mdash; credentials sent via SMS.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- A3: Teacher & Staff Management -->
+      <details class="feature" id="a-staff">
+        <summary>
+          <span class="feature-num">03</span>
+          <span class="feature-name">Teacher &amp; Staff Management</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Manage all school employees: teachers, administrative staff, support staff. Profiles, role assignment, class-subject mapping.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Staff Directory:</strong> Searchable list: Photo, Name, Designation, Department, Phone, Status. Filter by: Role (Teacher/Admin/Accountant/Support), Department, Status.</li>
+            <li><strong>Add Staff Form:</strong> Personal details, qualification, experience, joining date, salary info. Role assignment: Teacher, Class Teacher, HOD, Coordinator, Accountant, etc. Subject-Class mapping (for teachers): Which subjects in which classes.</li>
+            <li><strong>Staff Profile:</strong> Personal info, attendance record, leave balance, assigned classes, performance notes.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Staff login credentials auto-generated upon creation.</li>
+            <li>Role determines what modules/features they can access.</li>
+            <li>Class Teacher assignment: One teacher per section, assigned here.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- A4: Class & Section Management -->
+      <details class="feature" id="a-classes">
+        <summary>
+          <span class="feature-num">04</span>
+          <span class="feature-name">Class &amp; Section Management</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Create and manage the class-section structure of the school. Assign class teachers, define subjects per class, and manage student allocation.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Class Structure View:</strong> Tree/grid: Class (Nursery to 12) → Sections (A, B, C...). Each shows: Student count, Class Teacher name, Subject count. Add/edit/delete classes and sections.</li>
+            <li><strong>Class Settings:</strong> Assign class teacher, assign subject teachers, define subjects for the class, set max students per section, academic stream (for 11-12: Science/Commerce/Arts).</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Cannot delete a class with active students &mdash; must transfer students first.</li>
+            <li>Section creation triggers automatic roll number assignment when students are added.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- A5: Fee Management (Admin) -->
+      <details class="feature" id="a-fees">
+        <summary>
+          <span class="feature-num">05</span>
+          <span class="feature-name">Fee Management</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Complete fee management: define fee structures, create fee plans, track collections, manage defaulters, generate receipts and reports.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Fee Structure Builder:</strong> Define fee heads (Tuition, Transport, Lab, Library, Annual). Set amount per class or universal. Frequency: Monthly, Quarterly, Half-yearly, Annual, One-time. Due dates for each installment. Late fee rules: flat amount or percentage, grace period.</li>
+            <li><strong>Fee Plans:</strong> Create multiple plans: "Standard", "Transport + Standard", "Scholarship 50%", "Sibling Discount". Assign plans to students individually or in bulk.</li>
+            <li><strong>Collection Dashboard:</strong> Today's collection amount. Monthly/yearly collection vs target. Class-wise collection percentage. Payment mode breakdown (UPI/Card/Cash/Cheque).</li>
+            <li><strong>Defaulter Management:</strong> List of students with overdue fees. Columns: Student name, class, amount due, days overdue, parent phone. Send reminder: individual or bulk (SMS/WhatsApp/Push). Export defaulter list for follow-up.</li>
+            <li><strong>Receipt Management:</strong> Auto-generated receipts for online payments. Manual receipt entry for cash/cheque payments. Receipt format customizable with school logo.</li>
+            <li><strong>Concessions &amp; Scholarships:</strong> Apply discounts: Sibling, Staff child, Merit scholarship, Financial hardship. Approval workflow for concessions. Audit trail for all concessions granted.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Fee structure changes apply to new academic year only &mdash; mid-year changes require admin override.</li>
+            <li>Cash payments require manual entry by accountant with receipt number.</li>
+            <li>Cheque payments marked "Pending" until clearance confirmation.</li>
+            <li>Refund workflow: Request → Admin approval → Finance processing → Parent notification.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- A6: Academic Management -->
+      <details class="feature" id="a-academic">
+        <summary>
+          <span class="feature-num">06</span>
+          <span class="feature-name">Academic Management</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Manage the academic calendar, timetable creation, exam scheduling, holiday calendar, and session management.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Academic Session:</strong> Create/manage sessions (2026-27). Set start/end dates. Switch active session.</li>
+            <li><strong>Timetable Builder:</strong> Visual drag-and-drop timetable creation. Define periods (number, timings, break slots). Assign teacher-subject to each class-period. Conflict detection: Same teacher in two places, subject hour limits.</li>
+            <li><strong>Exam Manager:</strong> Create exam types (Unit Test 1, Mid-term, Final). Set exam schedule: dates, subjects, timings. Assign invigilators. Lock/unlock marks entry per exam.</li>
+            <li><strong>Holiday Calendar:</strong> Mark holidays (national, regional, school-specific). Automatically reflects in attendance, timetable, and daily summary.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Only one academic session is "active" at a time.</li>
+            <li>Timetable conflicts prevent saving until resolved.</li>
+            <li>Exam schedule must be published 14 days before exam start (configurable).</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- A7-A15: Remaining Admin Features -->
+      <details class="feature" id="a-announcements">
+        <summary>
+          <span class="feature-num">07</span>
+          <span class="feature-name">Announcements</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>School-wide announcement system with targeting, scheduling, and delivery tracking.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li>Compose: Title, body (rich text + images), category, priority level.</li>
+            <li>Target audience: All / Specific classes / Teachers only / Staff only / Individual parents.</li>
+            <li>Schedule: Send now or schedule for later.</li>
+            <li>Delivery channels: App push, SMS, WhatsApp, Email (select one or more).</li>
+            <li>Analytics: Sent count, delivered, read, acknowledged. Per-recipient status.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>SMS/WhatsApp have per-message costs &mdash; show cost estimate before sending.</li>
+            <li>Emergency announcements bypass scheduling and send immediately via all channels.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="feature" id="a-reports">
+        <summary>
+          <span class="feature-num">08</span>
+          <span class="feature-name">Reports &amp; Analytics</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Comprehensive reporting engine covering all school operations. Every report is downloadable as PDF/Excel.</p>
+          <h4>Report Categories</h4>
+          <ul>
+            <li><strong>Attendance Reports:</strong> Daily/monthly/yearly. Class-wise, student-wise. Teacher attendance. Trend analysis.</li>
+            <li><strong>Fee Reports:</strong> Collection summary (daily/monthly/yearly). Defaulter report. Fee head-wise collection. Payment mode analysis. Concession report.</li>
+            <li><strong>Academic Reports:</strong> Exam result analysis (class-wise, subject-wise). Top performers. At-risk students. Term comparison. Subject-wise pass percentage.</li>
+            <li><strong>Operational Reports:</strong> Student enrollment trends. Teacher workload distribution. Transport utilization. Inventory status.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Reports are generated on-demand or scheduled (daily/weekly email).</li>
+            <li>Data access in reports respects role permissions &mdash; accountant sees only fee reports.</li>
+            <li>Large reports (>1000 rows) generate asynchronously and notify when ready.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="feature" id="a-docs">
+        <summary>
+          <span class="feature-num">09</span>
+          <span class="feature-name">Document Management</span>
+          <span class="tag should">Should Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Central document repository for all school documents. Upload, categorize, and share documents with relevant stakeholders.</p>
+          <h4>Document Types</h4>
+          <ul>
+            <li>Student records (bulk): Report cards, TC, certificates</li>
+            <li>School policies and circulars</li>
+            <li>Staff documents: Appointment letters, ID proofs</li>
+            <li>Compliance documents: Affiliation, NOC, safety certificates</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Documents have access levels: Public (all staff), Restricted (admin only), Confidential (principal only).</li>
+            <li>Automatic backup of all documents to cloud storage.</li>
+            <li>Version control for frequently updated documents (policies, circulars).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="feature" id="a-roles">
+        <summary>
+          <span class="feature-num">10</span>
+          <span class="feature-name">Role &amp; Permission Management</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Fine-grained access control. Define roles and what each role can see and do in the system.</p>
+          <h4>Default Roles</h4>
+          <div class="spec-table-wrap">
+            <table class="spec-table">
+              <tr><th>Role</th><th>Access</th></tr>
+              <tr><td>Super Admin</td><td>Full access to everything</td></tr>
+              <tr><td>Principal</td><td>All modules, cannot modify system settings</td></tr>
+              <tr><td>Academic Coordinator</td><td>Timetable, exams, academic reports</td></tr>
+              <tr><td>Accountant</td><td>Fee management, fee reports, receipt generation</td></tr>
+              <tr><td>Teacher</td><td>Teacher module only (their classes)</td></tr>
+              <tr><td>Transport Manager</td><td>Transport module, driver management</td></tr>
+              <tr><td>Receptionist</td><td>Student enquiry, visitor management, phone directory</td></tr>
+            </table>
+          </div>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Permissions are granular: Module-level + Action-level (view / create / edit / delete).</li>
+            <li>Custom roles can be created by Super Admin.</li>
+            <li>All permission changes are logged with who-changed-what-when.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="feature" id="a-transport">
+        <summary>
+          <span class="feature-num">11</span>
+          <span class="feature-name">Transport Management</span>
+          <span class="tag should">Should Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Manage the school's transport fleet: buses, routes, drivers, stops, and student assignments.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Fleet Management:</strong> List of buses: Bus number, capacity, driver assigned, route assigned, GPS device ID, insurance expiry.</li>
+            <li><strong>Route Management:</strong> Create routes with ordered stops. Assign students to stops. Assign bus and driver to route. Estimated timing per stop.</li>
+            <li><strong>Driver Management:</strong> Driver profiles: Name, phone, license number, license expiry, address. Assign to bus.</li>
+            <li><strong>Live Tracking (Admin View):</strong> Map showing all buses simultaneously. Click bus for details and student list. Speed monitoring.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Driver license expiry alerts 30 days before.</li>
+            <li>Bus insurance/fitness expiry alerts 30 days before.</li>
+            <li>Route changes require 24-hour notice to parents (auto-notification).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="feature" id="a-inventory">
+        <summary>
+          <span class="feature-num">12</span>
+          <span class="feature-name">Inventory Management</span>
+          <span class="tag nice">Nice to Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Track school assets and consumables: books, uniforms, stationery, lab equipment, furniture.</p>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Inventory List:</strong> Item name, category, quantity in stock, minimum threshold, supplier, last purchase date.</li>
+            <li><strong>Stock Alerts:</strong> Items below minimum threshold highlighted.</li>
+            <li><strong>Issue/Return:</strong> Issue items to classes/teachers, track returns (library books, lab equipment).</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Low stock alert when quantity drops below configurable threshold.</li>
+            <li>Issued items have a due date for return; overdue items flagged.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="feature" id="a-comm">
+        <summary>
+          <span class="feature-num">13</span>
+          <span class="feature-name">Communication Center</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Unified multi-channel communication hub. Send notifications and messages through any combination of channels.</p>
+          <h4>Channels</h4>
+          <ul>
+            <li><strong>App Push Notifications:</strong> Free, instant, requires app installation.</li>
+            <li><strong>SMS:</strong> For parents without smartphones or app. Per-message cost. Delivery reports.</li>
+            <li><strong>WhatsApp (Business API):</strong> Rich messages with images/PDFs. Template-based messages. Higher open rate than SMS.</li>
+            <li><strong>Email:</strong> For detailed communications, report cards, receipts. Bulk email with personalization.</li>
+          </ul>
+          <h4>UI Components</h4>
+          <ul>
+            <li><strong>Compose Message:</strong> Write message → select audience → select channels → preview → send/schedule.</li>
+            <li><strong>Templates:</strong> Pre-saved message templates for common communications (fee reminder, PTM invite, holiday notice). Variables: {student_name}, {class}, {amount}, {date}.</li>
+            <li><strong>Delivery Dashboard:</strong> Sent, Delivered, Read, Failed counts per channel. Failed message retry.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>SMS/WhatsApp costs tracked and shown to admin before sending.</li>
+            <li>Monthly SMS/WhatsApp budget limit configurable.</li>
+            <li>DND (Do Not Disturb) compliance for SMS in India (TRAI regulations).</li>
+            <li>WhatsApp messages must use pre-approved templates (Meta Business API requirement).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="feature" id="a-ai">
+        <summary>
+          <span class="feature-num">14</span>
+          <span class="feature-name">AI Insights</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>AI-generated insights that surface trends, anomalies, and actionable recommendations from school data. The admin doesn't need to run reports &mdash; the AI proactively highlights what needs attention.</p>
+          <h4>Insight Categories</h4>
+          <ul>
+            <li><strong>Attendance Insights:</strong> "Class 7B attendance has dropped 12% this month compared to last month." "15 students have been absent &gt;5 days this month. View list." "Tuesday has the lowest attendance across the school."</li>
+            <li><strong>Fee Insights:</strong> "Fee collection is 23% below target for July. 45 families have overdue fees." "Top 10 defaulters owe a combined &#8377;3,40,000." "Collection typically dips in August &mdash; consider sending reminders earlier."</li>
+            <li><strong>Academic Insights:</strong> "Class 9A Math results have declined &mdash; average dropped from 72% to 61%." "15 students are at risk of failing (below 40% in 2+ subjects)." "Science practical scores are consistently lower than theory &mdash; may need lab resource review."</li>
+            <li><strong>Operational Insights:</strong> "3 teachers have pending homework evaluation for &gt;5 days." "Bus Route 7 has been consistently late by 15 minutes." "Library book return rate is only 60% this month."</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Insights are generated daily at 7 AM (before school starts).</li>
+            <li>Each insight has an action button: "View Details", "Send Reminder", "Generate Report".</li>
+            <li>Admin can dismiss insights or mark as "Addressed".</li>
+            <li>Insights use historical comparison (this month vs last month, this year vs last year).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="feature" id="a-settings">
+        <summary>
+          <span class="feature-num">15</span>
+          <span class="feature-name">School Settings</span>
+          <span class="tag must">Must Have</span>
+          <span class="feature-arrow">&#9654;</span>
+        </summary>
+        <div class="feature-body">
+          <h4>Description</h4>
+          <p>Global configuration for the school's branding, academic structure, and operational preferences.</p>
+          <h4>Settings Categories</h4>
+          <ul>
+            <li><strong>School Profile:</strong> School name, logo, address, phone, email, website, affiliation number (CBSE/ICSE/State Board), UDISE code.</li>
+            <li><strong>Academic Settings:</strong> Grading system (percentage / CGPA / letter), passing marks threshold, exam weightage per term, report card template selection.</li>
+            <li><strong>Attendance Settings:</strong> School start time, late threshold, period-wise vs daily attendance toggle, minimum attendance % for exam eligibility.</li>
+            <li><strong>Fee Settings:</strong> Payment gateway configuration, late fee rules, receipt number format, GST settings.</li>
+            <li><strong>Notification Settings:</strong> Default channels per notification type, quiet hours, daily summary time, SMS gateway configuration, WhatsApp Business API setup.</li>
+            <li><strong>Branding:</strong> App color theme (primary color), logo placement, watermark for report cards, school motto.</li>
+          </ul>
+          <h4>Business Rules</h4>
+          <ul>
+            <li>Settings changes are logged with who-changed-what-when.</li>
+            <li>Some settings require app restart to take effect (branding changes).</li>
+            <li>Payment gateway credentials are encrypted and never exposed in UI after entry.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- AI DEEP DIVE -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section id="ai-deep-dive" class="sub-section">
+      <h3>AI Assistant &mdash; Deep Dive</h3>
+      <p>The AI layer is what differentiates SchoolAI from traditional school ERPs. Here's how it works under the hood.</p>
+
+      <div class="ai-section">
+        <h3>Architecture: How the AI Works</h3>
+        <div class="ai-flow">
+          <div class="ai-flow-step">
+            <div class="step-num">1</div>
+            <div class="step-title">User Query</div>
+            <div class="step-desc">Parent/Teacher types a question in natural language (Hindi/English/Hinglish)</div>
+          </div>
+          <div class="ai-flow-step">
+            <div class="step-num">2</div>
+            <div class="step-title">Intent Detection</div>
+            <div class="step-desc">NLP model identifies the intent (attendance? fees? homework?) and entities (which student, date, subject)</div>
+          </div>
+          <div class="ai-flow-step">
+            <div class="step-num">3</div>
+            <div class="step-title">Data Retrieval</div>
+            <div class="step-desc">System queries the school database for relevant data based on the detected intent. Only data the user is authorized to see.</div>
+          </div>
+          <div class="ai-flow-step">
+            <div class="step-num">4</div>
+            <div class="step-title">Response Generation</div>
+            <div class="step-desc">LLM formats the retrieved data into a natural, conversational response in the user's language.</div>
+          </div>
+        </div>
+
+        <h4 style="font-size:14px; font-weight:700; margin:20px 0 12px; color:var(--ink);">AI Technology Stack</h4>
+        <div class="spec-table-wrap">
+          <table class="spec-table">
+            <tr><th>Component</th><th>Purpose</th><th>Options</th></tr>
+            <tr><td>LLM (Language Model)</td><td>Natural language understanding &amp; generation</td><td>Claude API / OpenAI GPT-4 / Google Gemini</td></tr>
+            <tr><td>Intent Classifier</td><td>Categorize user query into predefined intents</td><td>Fine-tuned classifier or LLM function-calling</td></tr>
+            <tr><td>RAG Pipeline</td><td>Retrieve school data relevant to the query</td><td>Custom query builder mapping intents to DB queries</td></tr>
+            <tr><td>Language Detection</td><td>Detect Hindi/English/Hinglish</td><td>Built-in LLM capability</td></tr>
+            <tr><td>Content Generation</td><td>Homework, quizzes, remarks, lesson plans</td><td>LLM with school curriculum context</td></tr>
+          </table>
+        </div>
+
+        <h4 style="font-size:14px; font-weight:700; margin:20px 0 12px; color:var(--ink);">How the AI Learns &amp; Improves</h4>
+        <ul style="list-style:none; padding:0;">
+          <li style="padding-left:18px; margin-bottom:10px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.6;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--accent);"></span><strong>It does NOT learn from individual student data</strong> &mdash; it is not trained on school data. It uses school data at query-time (RAG), not training-time.</li>
+          <li style="padding-left:18px; margin-bottom:10px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.6;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--accent);"></span><strong>Content quality improves via feedback loop:</strong> When a teacher edits AI-generated homework before publishing, that edit pattern is logged. Over time, the AI adjusts its generation style to match the teacher's preferences.</li>
+          <li style="padding-left:18px; margin-bottom:10px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.6;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--accent);"></span><strong>Failed queries are logged:</strong> When the AI cannot answer a question, it's logged for review. These gaps are addressed by adding new intent handlers or data mappings.</li>
+          <li style="padding-left:18px; margin-bottom:10px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.6;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--accent);"></span><strong>School-specific context:</strong> Each school's AI is contextualized with their academic calendar, subjects, grading system, and policies &mdash; so it gives school-specific answers, not generic ones.</li>
+        </ul>
+      </div>
+
+      <h4 style="font-size:14px; font-weight:700; margin:20px 0 12px;">Data Privacy &amp; Safety</h4>
+      <ul>
+        <li style="padding-left:18px; margin-bottom:6px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--border);"></span>Student data is never sent to external AI services for training.</li>
+        <li style="padding-left:18px; margin-bottom:6px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--border);"></span>API calls to LLM providers use data-processing agreements (DPA) &mdash; data is not retained by the provider.</li>
+        <li style="padding-left:18px; margin-bottom:6px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--border);"></span>All AI interactions are logged for audit: who asked what, what data was accessed, what was the response.</li>
+        <li style="padding-left:18px; margin-bottom:6px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--border);"></span>Parent A cannot query data about Parent B's child &mdash; strict data isolation per family.</li>
+      </ul>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- NOTIFICATION SYSTEM -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section id="notification-system" class="sub-section">
+      <h3>Notification System</h3>
+      <p>Notifications are the nervous system of SchoolAI. Every important event triggers the right notification to the right person through the right channel.</p>
+
+      <div class="spec-table-wrap">
+        <table class="spec-table">
+          <tr><th>Channel</th><th>Use Case</th><th>Cost</th><th>Reliability</th></tr>
+          <tr><td>App Push</td><td>Primary channel for all notifications</td><td>Free</td><td>Requires app installed &amp; notifications enabled</td></tr>
+          <tr><td>SMS</td><td>Fallback for parents without smartphones; emergency alerts</td><td>&#8377;0.15-0.25/msg</td><td>Works on all phones, DND regulations apply</td></tr>
+          <tr><td>WhatsApp</td><td>Rich notifications with images/docs; fee reminders</td><td>&#8377;0.50-1.00/msg</td><td>High open rate (95%+), requires opt-in</td></tr>
+          <tr><td>Email</td><td>Report cards, receipts, detailed communications</td><td>~Free (SES)</td><td>Low open rate, good for records</td></tr>
+        </table>
+      </div>
+
+      <h4 style="font-size:14px; font-weight:700; margin:20px 0 12px;">Notification Priority Levels</h4>
+      <ul>
+        <li style="padding-left:18px; margin-bottom:6px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--coral);"></span><strong>Critical (Emergency):</strong> All channels simultaneously. Cannot be muted. Requires delivery confirmation.</li>
+        <li style="padding-left:18px; margin-bottom:6px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--amber);"></span><strong>Important:</strong> Push + SMS. Attendance absent, fee overdue, exam results.</li>
+        <li style="padding-left:18px; margin-bottom:6px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--accent);"></span><strong>Normal:</strong> Push only. New homework, announcements, chat messages.</li>
+        <li style="padding-left:18px; margin-bottom:6px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--ink-tertiary);"></span><strong>Low:</strong> In-app only. Gallery updates, study material uploads.</li>
+      </ul>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- DATA FLOW -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section id="data-flow" class="sub-section">
+      <h3>Cross-Module Data Flow</h3>
+      <p>Data flows bidirectionally between modules. Here are the key connections:</p>
+      <ul>
+        <li style="padding-left:18px; margin-bottom:8px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--accent);"></span><strong>Teacher marks attendance → Parent sees it instantly</strong> on dashboard + attendance screen + daily summary. Admin sees it in school dashboard + reports.</li>
+        <li style="padding-left:18px; margin-bottom:8px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--teal);"></span><strong>Teacher assigns homework → Parent gets notified</strong>, sees it in homework section + dashboard + daily summary. AI can answer queries about it.</li>
+        <li style="padding-left:18px; margin-bottom:8px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--purple);"></span><strong>Admin defines fee structure → Parent sees dues</strong> in fee management + dashboard. Admin tracks collection in reports. AI answers fee queries.</li>
+        <li style="padding-left:18px; margin-bottom:8px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--green);"></span><strong>Teacher enters marks → Admin publishes results → Parent sees report card</strong> in academic progress + document vault. AI generates insights for admin.</li>
+        <li style="padding-left:18px; margin-bottom:8px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--amber);"></span><strong>Parent applies leave → Teacher approves → Attendance auto-marked</strong> as "On Leave" for those dates.</li>
+        <li style="padding-left:18px; margin-bottom:8px; font-size:14px; color:var(--ink-secondary); position:relative; line-height:1.55;"><span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--coral);"></span><strong>Admin creates timetable → Teacher sees their schedule → Parent sees child's timetable.</strong> Substitutions propagate in real-time.</li>
+      </ul>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- NON-FUNCTIONAL REQUIREMENTS -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section id="nfr" class="sub-section">
+      <h3>Non-Functional Requirements</h3>
+
+      <div class="spec-table-wrap">
+        <table class="spec-table">
+          <tr><th>Category</th><th>Requirement</th><th>Target</th></tr>
+          <tr><td>Performance</td><td>Page/screen load time</td><td>&lt;2 seconds on 4G connection</td></tr>
+          <tr><td>Performance</td><td>API response time</td><td>&lt;500ms for 95th percentile</td></tr>
+          <tr><td>Performance</td><td>AI response time</td><td>&lt;3 seconds for query responses</td></tr>
+          <tr><td>Scalability</td><td>Concurrent users per school</td><td>500+ simultaneous users</td></tr>
+          <tr><td>Scalability</td><td>Multi-school support</td><td>Architecture should support SaaS multi-tenancy</td></tr>
+          <tr><td>Availability</td><td>Uptime</td><td>99.5% (allows ~44 hours downtime/year)</td></tr>
+          <tr><td>Security</td><td>Data encryption</td><td>AES-256 at rest, TLS 1.3 in transit</td></tr>
+          <tr><td>Security</td><td>Authentication</td><td>JWT with refresh tokens, OTP-based login</td></tr>
+          <tr><td>Security</td><td>Authorization</td><td>Role-based access control (RBAC)</td></tr>
+          <tr><td>Security</td><td>Data isolation</td><td>Tenant-level data isolation (school-level)</td></tr>
+          <tr><td>Compliance</td><td>Data privacy</td><td>DPDP Act 2023 (India) compliant for minors' data</td></tr>
+          <tr><td>Localization</td><td>Language support</td><td>English + Hindi (Phase 1), regional languages (Phase 2)</td></tr>
+          <tr><td>Platform</td><td>Parent/Teacher app</td><td>Android (API 24+) &amp; iOS (15+)</td></tr>
+          <tr><td>Platform</td><td>Admin panel</td><td>Web (Chrome, Safari, Edge &mdash; latest 2 versions)</td></tr>
+          <tr><td>Offline</td><td>Basic offline support</td><td>View cached data when offline, sync when back online</td></tr>
+          <tr><td>Backup</td><td>Data backup</td><td>Daily automated backups, 30-day retention</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <div class="callout success" style="margin-top:40px;">
+      <strong>Next Step:</strong> This PRD is ready for review. Once finalized, the next step is to discuss and finalize the Tech Stack &mdash; frontend framework, backend, database, AI/ML services, cloud infrastructure, and deployment strategy.
+    </div>
+
+  </main>
+</div>
