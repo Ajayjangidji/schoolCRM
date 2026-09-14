@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { getEmergencyAlerts, getEmergencyContacts, getStudent } from '@/hooks/use-data';
 import { getRelativeTime } from '@/lib/utils';
 import styles from './emergency.module.css';
@@ -14,7 +14,7 @@ const SEVERITY_CONFIG: Record<string, { label: string; color: string; bg: string
   low: { label: 'LOW', color: 'var(--info)', bg: 'var(--info-light)' },
 };
 
-const TYPE_ICONS: Record<string, JSX.Element> = {
+const TYPE_ICONS: Record<string, React.ReactNode> = {
   weather: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2v2M4.93 4.93l1.41 1.41M2 12h2M4.93 19.07l1.41-1.41M12 20v2M17.66 17.66l1.41 1.41M20 12h2M17.66 6.34l1.41-1.41"/><circle cx="12" cy="12" r="4"/></svg>,
   security: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2l8 4v6c0 5.25-3.5 9.74-8 11-4.5-1.26-8-5.75-8-11V6l8-4z"/><path d="M12 8v4M12 16h.01"/></svg>,
   health: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 6v12M6 12h12"/><circle cx="12" cy="12" r="10"/></svg>,

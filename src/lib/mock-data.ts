@@ -20,6 +20,7 @@ import {
   Notification,
   EmergencyAlert,
   EmergencyContact,
+  ChatMessage,
 } from '@/types';
 
 export const mockStudent: Student = {

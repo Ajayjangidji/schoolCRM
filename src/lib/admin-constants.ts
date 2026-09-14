@@ -1,0 +1,18 @@
+export const ADMIN_NAV_ITEMS = [
+  { label: 'Dashboard', href: '/admin/dashboard', icon: 'dashboard' },
+  { label: 'Students', href: '/admin/students', icon: 'students' },
+  { label: 'Teachers', href: '/admin/teachers', icon: 'teachers' },
+  { label: 'Classes', href: '/admin/classes', icon: 'classes' },
+  { label: 'Fees', href: '/admin/fees', icon: 'fees' },
+  { label: 'Attendance', href: '/admin/attendance', icon: 'attendance' },
+  { label: 'Exams', href: '/admin/exams', icon: 'exams' },
+  { label: 'Notices', href: '/admin/notices', icon: 'notices' },
+  { label: 'Staff & HR', href: '/admin/staff', icon: 'staff' },
+  { label: 'Reports', href: '/admin/reports', icon: 'reports' },
+  { label: 'Documents', href: '/admin/documents', icon: 'documents' },
+  { label: 'Roles', href: '/admin/roles', icon: 'roles' },
+  { label: 'Inventory', href: '/admin/inventory', icon: 'inventory' },
+  { label: 'Messages', href: '/admin/messages', icon: 'messages' },
+  { label: 'AI Insights', href: '/admin/ai-insights', icon: 'ai-insights' },
+  { label: 'Settings', href: '/admin/settings', icon: 'settings' },
+] as const;

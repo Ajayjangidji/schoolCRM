@@ -19,7 +19,7 @@ import styles from './ai-assistant.module.css';
 interface QuickAction {
   id: string;
   label: string;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   query: string;
   category: string;
   color: string;
