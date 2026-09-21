@@ -740,3 +740,243 @@ export const mockSchoolSettings: SchoolSetting[] = [
   { id: 'SET027', category: 'system', label: 'Backup Time', description: 'Daily backup schedule time', type: 'select', value: '02:00 AM', options: ['12:00 AM', '01:00 AM', '02:00 AM', '03:00 AM', '04:00 AM'] },
   { id: 'SET028', category: 'system', label: 'Log Retention (days)', description: 'Number of days to retain activity logs', type: 'number', value: '180' },
 ];
+
+// ── Teacher Attendance ──
+
+export interface TeacherAttendanceRecord {
+  id: string;
+  teacherId: string;
+  teacherName: string;
+  date: string;
+  status: 'present' | 'absent' | 'half-day' | 'on-leave' | 'late';
+  checkIn: string | null;
+  checkOut: string | null;
+  remarks: string;
+}
+
+function generateTeacherAttendance(): TeacherAttendanceRecord[] {
+  const teachers = [
+    { id: 'AT001', name: 'Mrs. Priya Sharma' },
+    { id: 'AT002', name: 'Mr. Rajesh Kumar' },
+    { id: 'AT003', name: 'Mrs. Sunita Verma' },
+    { id: 'AT004', name: 'Mr. Amit Singh' },
+    { id: 'AT005', name: 'Mrs. Neha Gupta' },
+    { id: 'AT006', name: 'Mr. Vikram Patel' },
+  ];
+
+  const statuses: TeacherAttendanceRecord['status'][] = ['present', 'absent', 'half-day', 'on-leave', 'late'];
+  const remarks: Record<TeacherAttendanceRecord['status'], string[]> = {
+    present: ['On time', 'Regular', ''],
+    absent: ['Sick leave', 'Personal emergency', 'Medical appointment'],
+    'half-day': ['Left early - medical', 'Joined after lunch', 'Doctor appointment in morning', 'Left at 1 PM - family event'],
+    'on-leave': ['Casual leave', 'Medical leave', 'Festival leave', 'Personal leave'],
+    late: ['Traffic delay', 'Bus late', 'Arrived 15 min late', 'Arrived 30 min late'],
+  };
+
+  const checkInTimes: Record<TeacherAttendanceRecord['status'], (() => string | null)> = {
+    present: () => `07:${(50 + Math.floor(Math.random() * 10)).toString().padStart(2, '0')} AM`,
+    absent: () => null,
+    'half-day': () => Math.random() > 0.5 ? '08:00 AM' : '12:30 PM',
+    'on-leave': () => null,
+    late: () => `08:${(15 + Math.floor(Math.random() * 30)).toString().padStart(2, '0')} AM`,
+  };
+
+  const checkOutTimes: Record<TeacherAttendanceRecord['status'], (() => string | null)> = {
+    present: () => `03:${(30 + Math.floor(Math.random() * 15)).toString().padStart(2, '0')} PM`,
+    absent: () => null,
+    'half-day': () => Math.random() > 0.5 ? '12:30 PM' : '03:30 PM',
+    'on-leave': () => null,
+    late: () => `03:${(30 + Math.floor(Math.random() * 15)).toString().padStart(2, '0')} PM`,
+  };
+
+  const records: TeacherAttendanceRecord[] = [];
+  let counter = 1;
+
+  // Generate for Aug 1 - Sep 20, 2026 (weekdays only)
+  const startDate = new Date(2026, 7, 1); // Aug 1
+  const endDate = new Date(2026, 8, 20); // Sep 20
+
+  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    const day = d.getDay();
+    if (day === 0 || day === 6) continue; // Skip weekends
+
+    const dateStr = d.toISOString().split('T')[0];
+
+    for (const teacher of teachers) {
+      // Weight toward present
+      const rand = Math.random();
+      let status: TeacherAttendanceRecord['status'];
+      if (rand < 0.65) status = 'present';
+      else if (rand < 0.75) status = 'late';
+      else if (rand < 0.83) status = 'half-day';
+      else if (rand < 0.91) status = 'absent';
+      else status = 'on-leave';
+
+      const remarkArr = remarks[status];
+      const remark = remarkArr[Math.floor(Math.random() * remarkArr.length)];
+
+      records.push({
+        id: `TA${String(counter++).padStart(4, '0')}`,
+        teacherId: teacher.id,
+        teacherName: teacher.name,
+        date: dateStr,
+        status,
+        checkIn: checkInTimes[status](),
+        checkOut: checkOutTimes[status](),
+        remarks: remark,
+      });
+    }
+  }
+
+  return records;
+}
+
+export const mockTeacherAttendance: TeacherAttendanceRecord[] = generateTeacherAttendance();
+
+// ─── Main Exams ───
+
+export interface MainExam {
+  id: string;
+  name: string;
+  academicYear: string;
+  startDate: string;
+  endDate: string;
+  status: 'upcoming' | 'ongoing' | 'completed' | 'results-published';
+  classes: string[];
+}
+
+export interface MainExamResultSubject {
+  subject: string;
+  maxMarks: number;
+  marksObtained: number;
+  grade: string;
+  isPassed: boolean;
+}
+
+export interface MainExamResult {
+  id: string;
+  examId: string;
+  studentId: string;
+  studentName: string;
+  class: string;
+  section: string;
+  rollNumber: string;
+  subjects: MainExamResultSubject[];
+  totalMarks: number;
+  totalObtained: number;
+  percentage: number;
+  grade: string;
+  rank: number;
+  remarks: string;
+  isPassed: boolean;
+}
+
+export const mockMainExams: MainExam[] = [
+  { id: 'ME001', name: 'First Unit Test', academicYear: '2026-27', startDate: '2026-07-15', endDate: '2026-07-22', status: 'completed', classes: ['6', '7', '8', '9', '10'] },
+  { id: 'ME002', name: 'Half Yearly', academicYear: '2026-27', startDate: '2026-09-20', endDate: '2026-10-05', status: 'results-published', classes: ['6', '7', '8', '9', '10', '11', '12'] },
+  { id: 'ME003', name: 'Second Unit Test', academicYear: '2026-27', startDate: '2027-01-10', endDate: '2027-01-18', status: 'upcoming', classes: ['6', '7', '8', '9', '10'] },
+  { id: 'ME004', name: 'Annual Exam', academicYear: '2026-27', startDate: '2027-03-01', endDate: '2027-03-20', status: 'upcoming', classes: ['6', '7', '8', '9', '10', '11', '12'] },
+];
+
+function gradeFor(pct: number): string {
+  if (pct >= 91) return 'A1';
+  if (pct >= 81) return 'A2';
+  if (pct >= 71) return 'B1';
+  if (pct >= 61) return 'B2';
+  if (pct >= 51) return 'C1';
+  if (pct >= 41) return 'C2';
+  if (pct >= 33) return 'D';
+  return 'E';
+}
+
+function buildResult(id: string, studentId: string, name: string, cls: string, section: string, roll: string, marks: number[], rank: number, remarks: string): MainExamResult {
+  const subjects = ['English', 'Hindi', 'Mathematics', 'Science', 'Social Science', 'Sanskrit', 'Computer Science'];
+  const maxPerSubject = 100;
+  const subjectResults: MainExamResultSubject[] = subjects.map((s, i) => {
+    const m = marks[i] ?? 0;
+    return { subject: s, maxMarks: maxPerSubject, marksObtained: m, grade: gradeFor(m), isPassed: m >= 33 };
+  });
+  const totalMarks = subjects.length * maxPerSubject;
+  const totalObtained = marks.reduce((a, b) => a + b, 0);
+  const pct = Math.round((totalObtained / totalMarks) * 100 * 10) / 10;
+  return { id, examId: 'ME002', studentId, studentName: name, class: cls, section, rollNumber: roll, subjects: subjectResults, totalMarks, totalObtained, percentage: pct, grade: gradeFor(pct), rank, remarks, isPassed: subjectResults.every((s) => s.isPassed) };
+}
+
+export const mockMainExamResults: MainExamResult[] = [
+  buildResult('MER001', 'STU001', 'Aarav Sharma', '10', 'A', '1001', [95, 88, 97, 92, 90, 85, 96], 1, 'Excellent overall performance'),
+  buildResult('MER002', 'STU002', 'Priya Patel', '10', 'A', '1002', [92, 90, 94, 88, 87, 82, 91], 2, 'Very consistent across subjects'),
+  buildResult('MER003', 'STU003', 'Rohit Verma', '10', 'A', '1003', [85, 78, 91, 82, 80, 75, 88], 3, 'Good performance in Science and Maths'),
+  buildResult('MER004', 'STU004', 'Sneha Gupta', '10', 'A', '1004', [80, 82, 78, 85, 88, 70, 75], 4, 'Steady performance'),
+  buildResult('MER005', 'STU005', 'Vikram Singh', '10', 'A', '1005', [72, 65, 88, 76, 70, 60, 82], 5, 'Strong in Maths and Computer Science'),
+  buildResult('MER006', 'STU006', 'Ananya Reddy', '10', 'A', '1006', [78, 74, 70, 72, 75, 68, 71], 6, 'Needs more focus on core subjects'),
+  buildResult('MER007', 'STU007', 'Arjun Mehta', '10', 'A', '1007', [65, 58, 72, 68, 62, 55, 70], 7, 'Average performance, can improve'),
+  buildResult('MER008', 'STU008', 'Kavya Nair', '10', 'A', '1008', [70, 72, 55, 60, 68, 65, 58], 8, 'Needs extra effort in Maths'),
+  buildResult('MER009', 'STU009', 'Rishi Joshi', '10', 'A', '1009', [55, 50, 62, 58, 54, 48, 60], 9, 'Below average, needs coaching'),
+  buildResult('MER010', 'STU010', 'Diya Iyer', '10', 'A', '1010', [48, 42, 55, 50, 45, 40, 52], 10, 'Struggling — recommend remedial classes'),
+  buildResult('MER011', 'STU011', 'Manav Chauhan', '10', 'B', '1011', [90, 85, 92, 88, 86, 80, 93], 1, 'Section topper, excellent work'),
+  buildResult('MER012', 'STU012', 'Ishita Das', '10', 'B', '1012', [82, 80, 78, 84, 79, 76, 80], 2, 'Consistent performer'),
+  buildResult('MER013', 'STU013', 'Aditya Kumar', '10', 'B', '1013', [60, 55, 68, 62, 58, 50, 65], 3, 'Fair performance'),
+  buildResult('MER014', 'STU014', 'Neha Saxena', '10', 'B', '1014', [45, 38, 52, 44, 40, 35, 48], 4, 'Below passing in Hindi — needs attention'),
+  buildResult('MER015', 'STU015', 'Karan Tiwari', '10', 'B', '1015', [30, 28, 40, 35, 32, 25, 38], 5, 'Failed multiple subjects — parent meeting needed'),
+];
+
+// ─── Daily Expenses ───
+export interface ExpenseCategory {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+}
+
+export interface DailyExpense {
+  id: string;
+  date: string;
+  category: string;
+  description: string;
+  amount: number;
+  paidTo: string;
+  paymentMode: 'cash' | 'upi' | 'bank';
+  receiptNo: string;
+  addedBy: string;
+  status: 'approved' | 'pending' | 'rejected';
+}
+
+export const mockExpenseCategories: ExpenseCategory[] = [
+  { id: 'ECAT01', name: 'Fuel', icon: '⛽', color: '#e65100' },
+  { id: 'ECAT02', name: 'Puncture', icon: '🔧', color: '#6d4c41' },
+  { id: 'ECAT03', name: 'New Tire', icon: '🛞', color: '#37474f' },
+  { id: 'ECAT04', name: 'Bus Repair', icon: '🚌', color: '#1565c0' },
+  { id: 'ECAT05', name: 'Vehicle Service', icon: '🔩', color: '#00838f' },
+  { id: 'ECAT06', name: 'Stationery', icon: '📎', color: '#7c3aed' },
+  { id: 'ECAT07', name: 'Maintenance', icon: '🏗️', color: '#2e7d32' },
+  { id: 'ECAT08', name: 'Electricity', icon: '💡', color: '#f9a825' },
+  { id: 'ECAT09', name: 'Water', icon: '💧', color: '#0288d1' },
+  { id: 'ECAT10', name: 'Internet', icon: '🌐', color: '#5e35b1' },
+  { id: 'ECAT11', name: 'Salary Advance', icon: '💰', color: '#c62828' },
+  { id: 'ECAT12', name: 'Medical', icon: '🏥', color: '#ad1457' },
+  { id: 'ECAT13', name: 'Event', icon: '🎉', color: '#ff6f00' },
+  { id: 'ECAT14', name: 'Miscellaneous', icon: '📦', color: '#546e7a' },
+];
+
+export const mockDailyExpenses: DailyExpense[] = [
+  { id: 'EXP001', date: '2026-09-01', category: 'Fuel', description: 'Diesel for Bus Route 1 & 2', amount: 4500, paidTo: 'HP Petrol Pump', paymentMode: 'upi', receiptNo: 'REC-0901-01', addedBy: 'Mr. Sharma', status: 'approved' },
+  { id: 'EXP002', date: '2026-09-01', category: 'Stationery', description: 'Chalk boxes, markers & registers', amount: 1850, paidTo: 'Gupta Stationery', paymentMode: 'cash', receiptNo: 'REC-0901-02', addedBy: 'Mrs. Verma', status: 'approved' },
+  { id: 'EXP003', date: '2026-09-02', category: 'Puncture', description: 'Bus 3 rear tire puncture repair', amount: 350, paidTo: 'Raju Tire Works', paymentMode: 'cash', receiptNo: 'REC-0902-01', addedBy: 'Mr. Sharma', status: 'approved' },
+  { id: 'EXP004', date: '2026-09-03', category: 'Electricity', description: 'September electricity bill advance', amount: 28000, paidTo: 'MP Electricity Board', paymentMode: 'bank', receiptNo: 'REC-0903-01', addedBy: 'Mr. Pandey', status: 'approved' },
+  { id: 'EXP005', date: '2026-09-04', category: 'Maintenance', description: 'Classroom 8A window glass replacement', amount: 2200, paidTo: 'Agarwal Glass House', paymentMode: 'cash', receiptNo: 'REC-0904-01', addedBy: 'Mr. Pandey', status: 'approved' },
+  { id: 'EXP006', date: '2026-09-05', category: 'Fuel', description: 'Diesel for Bus Route 3 & 4', amount: 5200, paidTo: 'Indian Oil Pump', paymentMode: 'upi', receiptNo: 'REC-0905-01', addedBy: 'Mr. Sharma', status: 'approved' },
+  { id: 'EXP007', date: '2026-09-06', category: 'Water', description: 'Water tanker for school campus', amount: 1500, paidTo: 'Narmada Water Supply', paymentMode: 'cash', receiptNo: 'REC-0906-01', addedBy: 'Mr. Pandey', status: 'approved' },
+  { id: 'EXP008', date: '2026-09-08', category: 'Internet', description: 'Monthly broadband bill - September', amount: 3500, paidTo: 'Airtel Business', paymentMode: 'bank', receiptNo: 'REC-0908-01', addedBy: 'Mr. Pandey', status: 'approved' },
+  { id: 'EXP009', date: '2026-09-09', category: 'Bus Repair', description: 'Bus 2 brake pad replacement', amount: 6800, paidTo: 'Singh Auto Garage', paymentMode: 'upi', receiptNo: 'REC-0909-01', addedBy: 'Mr. Sharma', status: 'approved' },
+  { id: 'EXP010', date: '2026-09-10', category: 'Salary Advance', description: 'Advance to peon Ramesh for medical emergency', amount: 5000, paidTo: 'Ramesh Kumar', paymentMode: 'cash', receiptNo: 'REC-0910-01', addedBy: 'Dr. Rathore', status: 'approved' },
+  { id: 'EXP011', date: '2026-09-11', category: 'New Tire', description: 'New front tires for Bus 1 (pair)', amount: 12500, paidTo: 'MRF Tire Dealer', paymentMode: 'bank', receiptNo: 'REC-0911-01', addedBy: 'Mr. Sharma', status: 'approved' },
+  { id: 'EXP012', date: '2026-09-12', category: 'Medical', description: 'First aid kit refill and medicines', amount: 3200, paidTo: 'City Pharmacy', paymentMode: 'upi', receiptNo: 'REC-0912-01', addedBy: 'Mrs. Verma', status: 'approved' },
+  { id: 'EXP013', date: '2026-09-13', category: 'Event', description: 'Hindi Diwas decoration & prizes', amount: 4500, paidTo: 'Creative Decorators', paymentMode: 'cash', receiptNo: 'REC-0913-01', addedBy: 'Mrs. Verma', status: 'approved' },
+  { id: 'EXP014', date: '2026-09-15', category: 'Fuel', description: 'Diesel for all buses - weekly refill', amount: 9800, paidTo: 'HP Petrol Pump', paymentMode: 'upi', receiptNo: 'REC-0915-01', addedBy: 'Mr. Sharma', status: 'pending' },
+  { id: 'EXP015', date: '2026-09-16', category: 'Vehicle Service', description: 'Bus 4 full service & oil change', amount: 8500, paidTo: 'Singh Auto Garage', paymentMode: 'bank', receiptNo: 'REC-0916-01', addedBy: 'Mr. Sharma', status: 'pending' },
+  { id: 'EXP016', date: '2026-09-17', category: 'Maintenance', description: 'Plumbing repair - washroom block B', amount: 3800, paidTo: 'Verma Plumbing Services', paymentMode: 'cash', receiptNo: 'REC-0917-01', addedBy: 'Mr. Pandey', status: 'pending' },
+  { id: 'EXP017', date: '2026-09-18', category: 'Stationery', description: 'Printer cartridges & A4 paper reams', amount: 4200, paidTo: 'Gupta Stationery', paymentMode: 'upi', receiptNo: 'REC-0918-01', addedBy: 'Mrs. Verma', status: 'pending' },
+  { id: 'EXP018', date: '2026-09-19', category: 'Miscellaneous', description: 'Pest control for ground floor', amount: 2800, paidTo: 'Clean India Services', paymentMode: 'cash', receiptNo: 'REC-0919-01', addedBy: 'Mr. Pandey', status: 'rejected' },
+  { id: 'EXP019', date: '2026-09-19', category: 'Fuel', description: 'Diesel for generator - backup power', amount: 3200, paidTo: 'HP Petrol Pump', paymentMode: 'upi', receiptNo: 'REC-0919-02', addedBy: 'Mr. Pandey', status: 'pending' },
+  { id: 'EXP020', date: '2026-09-20', category: 'Event', description: 'Annual sports day ground preparation', amount: 15000, paidTo: 'Green Lawn Services', paymentMode: 'bank', receiptNo: 'REC-0920-01', addedBy: 'Mrs. Verma', status: 'pending' },
+];

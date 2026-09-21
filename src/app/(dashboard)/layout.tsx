@@ -16,7 +16,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
 
   const currentNav = NAV_ITEMS.find((item) => item.href === pathname);
-  const pageTitle = currentNav?.label || 'Dashboard';
+  const pageTitle = pathname === '/settings' ? 'Settings' : currentNav?.label || 'Dashboard';
 
   return (
     <div className={styles.layout}>

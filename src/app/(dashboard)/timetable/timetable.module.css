@@ -452,3 +452,8 @@
   flex-shrink: 0;
   margin-top: 1px;
 }
+
+.dayHeaderToday {
+  background: var(--primary);
+  color: var(--white);
+}

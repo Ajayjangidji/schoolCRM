@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { getTodayTimetable, getWeekTimetable, getExamSchedule } from '@/hooks/use-data';
+import { getTodayTimetable, getWeekTimetable, getExamSchedule, getToday, getCurrentHour } from '@/hooks/use-data';
 import { getSubjectColor, formatDate, getDaysUntil } from '@/lib/utils';
 import styles from './timetable.module.css';
 
@@ -13,7 +13,10 @@ export default function TimetablePage() {
   const weekTimetable = getWeekTimetable();
   const examSchedule = getExamSchedule();
 
-  const currentHour = 10;
+  const todayDate = new Date(getToday());
+  const currentHour = getCurrentHour();
+  const todayWeekday = todayDate.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+  const todayLabel = todayDate.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
   const classPeriods = todayPeriods.filter((p) => p.type === 'class');
   const totalPeriods = classPeriods.length;
   const completedPeriods = classPeriods.filter((p) => {
@@ -60,7 +63,7 @@ export default function TimetablePage() {
       {view === 'today' && (
         <div className={styles.card}>
           <div className={styles.cardHeader}>
-            <span className={styles.cardTitle}>Today — Monday, 9 Aug 2026</span>
+            <span className={styles.cardTitle}>Today — {todayLabel}</span>
             <span className={styles.periodCount}>{totalPeriods} classes</span>
           </div>
           <div className={styles.cardBody}>
@@ -137,7 +140,7 @@ export default function TimetablePage() {
             <div className={styles.weekGrid}>
               {weekTimetable.map((day) => (
                 <div key={day.day} className={styles.dayColumn}>
-                  <div className={styles.dayHeader}>{day.day}</div>
+                  <div className={`${styles.dayHeader} ${day.day === todayWeekday ? styles.dayHeaderToday : ''}`}>{day.day}{day.day === todayWeekday ? ' (Today)' : ''}</div>
                   <div className={styles.dayPeriods}>
                     {day.periods.map((period, idx) => {
                       const isBreak = period.type === 'break' || period.type === 'lunch';
@@ -176,7 +179,7 @@ export default function TimetablePage() {
           <div className={styles.cardBody}>
             <div className={styles.examList}>
               {examSchedule.map((exam) => {
-                const daysLeft = getDaysUntil(exam.date);
+                const daysLeft = getDaysUntil(exam.date, todayDate);
                 return (
                   <div key={exam.id} className={styles.examCard}>
                     <div className={styles.examDateBlock}>
@@ -188,7 +191,7 @@ export default function TimetablePage() {
                       <div className={styles.examTopRow}>
                         <span className={styles.examSubject}>{exam.subject}</span>
                         <span className={styles.examDaysLeft} style={{ color: daysLeft <= 3 ? 'var(--danger)' : 'var(--text-tertiary)' }}>
-                          {daysLeft} days left
+                          {daysLeft === 1 ? '1 day left' : `${daysLeft} days left`}
                         </span>
                       </div>
                       <div className={styles.examMeta}>

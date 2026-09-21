@@ -409,3 +409,126 @@
   font-size: var(--text-sm);
   color: var(--text-secondary);
 }
+
+.uploadInput { display: none; }
+
+.formInputError { border-color: var(--danger); }
+
+.fieldError {
+  font-size: var(--text-xs);
+  color: var(--danger);
+}
+
+.daysNote {
+  margin-right: auto;
+  align-self: center;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--primary);
+}
+
+.fileChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+}
+
+.fileRemove {
+  font-size: var(--text-base);
+  line-height: 1;
+  color: var(--primary-dark);
+}
+
+.leaveAttachment {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.leaveAttachment a {
+  color: var(--primary);
+  font-weight: var(--font-medium);
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+
+.trackStep {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--text-tertiary);
+}
+
+.trackLine {
+  width: 20px;
+  height: 2px;
+  margin-right: 2px;
+  background: var(--gray-200);
+}
+
+.trackDot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--gray-300);
+}
+
+.track_done { color: var(--success-dark); }
+.track_done .trackDot, .track_done .trackLine { background: var(--success); }
+.track_active { color: var(--warning-dark); font-weight: var(--font-semibold); }
+.track_active .trackDot { background: var(--warning); box-shadow: 0 0 0 3px var(--warning-light); }
+.track_active .trackLine { background: var(--success); }
+.track_failed { color: var(--danger); font-weight: var(--font-semibold); }
+.track_failed .trackDot { background: var(--danger); }
+.track_failed .trackLine { background: var(--gray-300); }
+
+.cancelRow {
+  padding-top: var(--space-1);
+}
+
+.cancelRequestBtn {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--danger);
+}
+
+.cancelRequestBtn:hover {
+  text-decoration: underline;
+}
+
+.leaveRejected {
+  color: var(--danger);
+}
+
+.dangerBtn {
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  background: var(--danger);
+  color: var(--white);
+}
+
+.dangerBtn:hover {
+  background: var(--danger-dark);
+}
+
+.confirmText {
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
+}

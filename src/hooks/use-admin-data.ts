@@ -23,6 +23,11 @@ import {
   mockMessages,
   mockAIInsights,
   mockSchoolSettings,
+  mockTeacherAttendance,
+  mockMainExams,
+  mockMainExamResults,
+  mockDailyExpenses,
+  mockExpenseCategories,
 } from '@/lib/admin-mock-data';
 
 import type {
@@ -51,9 +56,14 @@ import type {
   Message,
   AIInsight,
   SchoolSetting,
+  TeacherAttendanceRecord,
+  MainExam,
+  MainExamResult,
+  DailyExpense,
+  ExpenseCategory,
 } from '@/lib/admin-mock-data';
 
-export type { SchoolStats, ClassWiseData, RecentActivity, FeeOverview, EnrollmentTrend, AdminStudent, AdminTeacher, AdminClass, FeeRecord, FeeStructure, Exam, ExamResult, AcademicCalendarEvent, AdminNotice, MonthlyAttendance, SubjectPerformance, ClassPerformanceTrend, SchoolDocument, Permission, Role, ClassAttendance, InventoryItem, Message, AIInsight, SchoolSetting };
+export type { SchoolStats, ClassWiseData, RecentActivity, FeeOverview, EnrollmentTrend, AdminStudent, AdminTeacher, AdminClass, FeeRecord, FeeStructure, Exam, ExamResult, AcademicCalendarEvent, AdminNotice, MonthlyAttendance, SubjectPerformance, ClassPerformanceTrend, SchoolDocument, Permission, Role, ClassAttendance, InventoryItem, Message, AIInsight, SchoolSetting, TeacherAttendanceRecord, MainExam, MainExamResult, DailyExpense, ExpenseCategory };
 
 const USE_MOCK_DATA = true;
 
@@ -174,6 +184,34 @@ export function getAIInsights(): AIInsight[] {
 
 export function getSchoolSettings(): SchoolSetting[] {
   if (USE_MOCK_DATA) return mockSchoolSettings;
+  throw new Error('API not implemented');
+}
+
+export function getTeacherAttendanceRecords(): TeacherAttendanceRecord[] {
+  if (USE_MOCK_DATA) return mockTeacherAttendance;
+  throw new Error('API not implemented');
+}
+
+export function getMainExams(): MainExam[] {
+  if (USE_MOCK_DATA) return mockMainExams;
+  throw new Error('API not implemented');
+}
+
+export function getMainExamResults(examId?: string): MainExamResult[] {
+  if (USE_MOCK_DATA) {
+    if (examId) return mockMainExamResults.filter((r) => r.examId === examId);
+    return mockMainExamResults;
+  }
+  throw new Error('API not implemented');
+}
+
+export function getDailyExpenses(): DailyExpense[] {
+  if (USE_MOCK_DATA) return mockDailyExpenses;
+  throw new Error('API not implemented');
+}
+
+export function getExpenseCategories(): ExpenseCategory[] {
+  if (USE_MOCK_DATA) return mockExpenseCategories;
   throw new Error('API not implemented');
 }
 

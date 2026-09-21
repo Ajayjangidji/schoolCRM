@@ -407,3 +407,28 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+.fileInput { display: none; }
+
+.secureNote {
+  color: var(--text-tertiary);
+}
+
+.attachmentLink {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 140px;
+}
+
+.attachmentName {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.attachmentSize {
+  font-size: var(--text-xs);
+  opacity: 0.8;
+}

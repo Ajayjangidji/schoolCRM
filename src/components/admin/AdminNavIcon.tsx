@@ -56,12 +56,30 @@ export default function AdminNavIcon({ icon, size = 20 }: AdminNavIconProps) {
           <path d="M7 11l2 2 4-4" />
         </svg>
       );
+    case 'teacher-attendance':
+      return (
+        <svg {...s} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="10" cy="5" r="3" />
+          <path d="M4 17c0-3.5 2.7-6 6-6s6 2.5 6 6" />
+          <rect x="3" y="3" width="3" height="3" rx="0.5" />
+          <path d="M4 4.5l0.7 0.7 1.3-1.4" />
+        </svg>
+      );
     case 'exams':
       return (
         <svg {...s} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 2h12v16H4z" />
           <path d="M7 6h6M7 9h6M7 12h4" />
           <path d="M13 14l2-2-2-2" />
+        </svg>
+      );
+    case 'main-exams':
+      return (
+        <svg {...s} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 2h14v16H3z" />
+          <path d="M6 6h8M6 9h8M6 12h5" />
+          <path d="M13 14l1.5-1.5L13 11" />
+          <path d="M3 2h14v3H3z" />
         </svg>
       );
     case 'notices':
@@ -100,6 +118,16 @@ export default function AdminNavIcon({ icon, size = 20 }: AdminNavIconProps) {
         <svg {...s} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="3" width="14" height="14" rx="2" />
           <path d="M7 7h2v2H7zM11 7h2v2h-2zM7 11h2v2H7zM11 11h2v2h-2z" />
+        </svg>
+      );
+    case 'expenses':
+      return (
+        <svg {...s} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="3" width="16" height="14" rx="2" />
+          <path d="M2 7h16" />
+          <path d="M6 11h2M6 14h4" />
+          <path d="M14 10v5" />
+          <path d="M12 12h4" />
         </svg>
       );
     case 'inventory':

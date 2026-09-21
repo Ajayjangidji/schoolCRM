@@ -1,9 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { getFeeDetails } from '@/hooks/use-data';
+import { getFeeDetails, getStudent } from '@/hooks/use-data';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { FEE_STATUS_LABELS } from '@/lib/constants';
+import { buildReceiptHtml, openPrintable } from '@/lib/print';
+import { useToast } from '@/components/common/Toast';
+import PayModal from '@/components/features/fees/PayModal';
+import type { FeeInstallment } from '@/types';
 import styles from './fees.module.css';
 
 function getStatusStyle(status: string): { bg: string; text: string } {
@@ -33,12 +37,25 @@ const FREQUENCY_LABELS: Record<string, string> = {
 };
 
 export default function FeesPage() {
-  const fees = getFeeDetails();
-  const [payingId, setPayingId] = useState<string | null>(null);
+  const baseFees = getFeeDetails();
+  const student = getStudent();
+  const [paying, setPaying] = useState<FeeInstallment | null>(null);
+  const [paidOverrides, setPaidOverrides] = useState<Record<string, FeeInstallment>>({});
+  const { showToast, toastNode } = useToast();
+
+  const installments = baseFees.installments.map((i) => paidOverrides[i.id] ?? i);
+  const totalPaid = installments.filter((i) => i.status === 'paid').reduce((sum, i) => sum + i.paidAmount, 0);
+  const fees = { ...baseFees, installments, totalPaid, totalBalance: baseFees.totalAnnualFee - totalPaid };
 
   const paidPercentage = Math.round((fees.totalPaid / fees.totalAnnualFee) * 100);
   const paidInstallments = fees.installments.filter((i) => i.status === 'paid');
   const nextDue = fees.installments.find((i) => i.status === 'pending' || i.status === 'overdue');
+
+  function downloadReceipt(installment: FeeInstallment) {
+    const opened = openPrintable(`Fee Receipt - ${installment.label}`, buildReceiptHtml(student, installment));
+    if (opened) showToast('Choose "Save as PDF" in the print dialog to download');
+    else showToast('Pop-up blocked. Please allow pop-ups to download.', 'error');
+  }
 
   return (
     <div className={styles.page}>
@@ -96,7 +113,7 @@ export default function FeesPage() {
               </div>
               <div className={styles.nextDueRight}>
                 <span className={styles.nextDueAmount}>{formatCurrency(nextDue.amount)}</span>
-                <button className={styles.payNowBtn} onClick={() => setPayingId(nextDue.id)}>Pay Now</button>
+                <button className={styles.payNowBtn} onClick={() => setPaying(nextDue)}>Pay Now</button>
               </div>
             </div>
           )}
@@ -142,7 +159,7 @@ export default function FeesPage() {
                         <span>Txn ID</span>
                         <span className={styles.txnId}>{inst.transactionId}</span>
                       </div>
-                      <button className={styles.receiptBtn}>
+                      <button className={styles.receiptBtn} onClick={() => downloadReceipt(inst)}>
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 2v9m0 0l-3-3m3 3l3-3" /><path d="M2 12v1.5A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5V12" /></svg>
                         Download Receipt
                       </button>
@@ -150,16 +167,11 @@ export default function FeesPage() {
                   )}
 
                   {isPayable && (
-                    <button className={styles.installmentPayBtn} onClick={() => setPayingId(inst.id)}>
+                    <button className={styles.installmentPayBtn} onClick={() => setPaying(inst)}>
                       Pay Now
                     </button>
                   )}
 
-                  {payingId === inst.id && (
-                    <div className={styles.payingNote}>
-                      Payment gateway will open here once backend is connected.
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -208,6 +220,9 @@ export default function FeesPage() {
                       <div className={styles.historyMeta}>{inst.paidDate && formatDate(inst.paidDate)} &middot; {inst.paymentMode && PAYMENT_MODE_LABELS[inst.paymentMode]}</div>
                     </div>
                     <span className={styles.historyAmount}>{formatCurrency(inst.paidAmount)}</span>
+                    <button className={styles.historyReceipt} onClick={() => downloadReceipt(inst)} title="Download receipt" aria-label={`Download receipt for ${inst.label}`}>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 2v9m0 0l-3-3m3 3l3-3" /><path d="M2 12v1.5A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5V12" /></svg>
+                    </button>
                   </div>
                 ))}
               </div>
@@ -215,6 +230,20 @@ export default function FeesPage() {
           </div>
         </div>
       </div>
+
+      {paying && (
+        <PayModal
+          installment={paying}
+          studentName={student.name}
+          onClose={() => setPaying(null)}
+          onPaid={(paid) => {
+            setPaidOverrides((prev) => ({ ...prev, [paid.id]: paid }));
+            showToast(`${paid.label} paid successfully`);
+          }}
+          onDownloadReceipt={downloadReceipt}
+        />
+      )}
+      {toastNode}
     </div>
   );
 }

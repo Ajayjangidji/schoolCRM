@@ -116,6 +116,7 @@
   /* ── Z-Index ── */
   --z-sidebar: 100;
   --z-header: 200;
+  --z-dropdown: 250;
   --z-modal-overlay: 300;
   --z-modal: 400;
   --z-toast: 500;

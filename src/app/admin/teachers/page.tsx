@@ -4,11 +4,45 @@ import { useState } from 'react';
 import { getAdminTeachers } from '@/hooks/use-admin-data';
 import type { AdminTeacher } from '@/hooks/use-admin-data';
 import { getInitials, formatDate } from '@/lib/utils';
+import { openPrintable, escapeHtml } from '@/lib/print';
 import styles from './teachers.module.css';
 
 const INR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
 const PER_PAGE = 10;
 const DEPT_COLORS: Record<string, string> = { Mathematics: '#7c3aed', Science: '#1565c0', English: '#2e7d32', Hindi: '#e65100', 'Social Studies': '#00897b', 'Computer Science': '#6a1b9a', 'Physical Education': '#c62828' };
+
+function buildTeacherIdCardHtml(teacher: AdminTeacher): string {
+  const color = DEPT_COLORS[teacher.department] || '#7c3aed';
+  return `<div style="max-width:380px;margin:40px auto;font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">
+    <div style="background:linear-gradient(135deg,${color},#2563EB);border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+      <div style="padding:20px 24px;color:#fff;text-align:center;">
+        <div style="font-size:18px;font-weight:700;">SchoolAI International Academy</div>
+        <div style="font-size:11px;opacity:.8;margin-top:2px;">CBSE Affiliated | Staff Identity Card</div>
+      </div>
+      <div style="background:#fff;padding:24px;text-align:center;">
+        <div style="width:80px;height:80px;border-radius:50%;background:${color};color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;border:3px solid ${color}40;margin-bottom:12px;">${escapeHtml(getInitials(teacher.name))}</div>
+        <div style="font-size:20px;font-weight:700;color:#111827;">${escapeHtml(teacher.name)}</div>
+        <div style="font-size:13px;color:#6B7280;margin-top:4px;">${escapeHtml(teacher.designation)} — ${escapeHtml(teacher.department)}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-top:16px;text-align:left;font-size:12px;">
+          <div><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Employee ID</span><strong>${escapeHtml(teacher.employeeId)}</strong></div>
+          <div><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Joining Date</span><strong>${escapeHtml(formatDate(teacher.joiningDate))}</strong></div>
+          <div><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Phone</span><strong>${escapeHtml(teacher.phone)}</strong></div>
+          <div><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Email</span><strong style="font-size:11px;">${escapeHtml(teacher.email)}</strong></div>
+          <div><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Qualification</span><strong>${escapeHtml(teacher.qualification)}</strong></div>
+          <div><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Experience</span><strong>${teacher.experience} years</strong></div>
+          ${teacher.subjects.length > 0 ? `<div style="grid-column:1/-1;"><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Subjects</span><strong>${escapeHtml(teacher.subjects.join(', '))}</strong></div>` : ''}
+        </div>
+      </div>
+      <div style="background:#F9FAFB;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#6B7280;">
+        <span>ID: ${escapeHtml(teacher.employeeId)}</span>
+        <span>Valid: 2026-27</span>
+      </div>
+      <div style="background:linear-gradient(135deg,${color},#2563EB);padding:10px 24px;text-align:center;">
+        <div style="font-size:10px;color:rgba(255,255,255,0.7);">If found, please return to SchoolAI International Academy</div>
+      </div>
+    </div>
+  </div>`;
+}
 const ALL_DEPARTMENTS = ['Mathematics', 'Science', 'English', 'Hindi', 'Social Studies', 'Computer Science', 'Physical Education'];
 const ALL_SUBJECTS = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Hindi', 'Sanskrit', 'Social Studies', 'Computer Science', 'Physical Education', 'Art', 'Music', 'Economics', 'Accounts', 'Business Studies'];
 const DESIGNATIONS = ['PGT', 'TGT', 'PRT', 'Head of Department', 'Vice Principal', 'Sports Coach'];
@@ -23,6 +57,7 @@ export default function AdminTeachersPage() {
   const [selected, setSelected] = useState<AdminTeacher | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  const [teacherIdFile, setTeacherIdFile] = useState<File | null>(null);
 
   const departments = [...new Set(allTeachers.map((t) => t.department))].sort();
   const activeCount = allTeachers.filter((t) => t.status === 'active').length;
@@ -208,17 +243,74 @@ export default function AdminTeachersPage() {
                 <div className={styles.detailItem}><span className={styles.detailLabel}>Subjects</span><span className={styles.detailValue}>{selected.subjects.join(', ')}</span></div>
                 <div className={styles.detailItem}><span className={styles.detailLabel}>Address</span><span className={styles.detailValue}>{selected.address}</span></div>
               </div>
+              {/* Attendance Graph */}
+              <div className={styles.graphSection}>
+                <h3 className={styles.graphTitle}>
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="3" width="14" height="14" rx="1" /><path d="M3 7h14M7 3v4M13 3v4" /><path d="M7 11l2 2 4-4" /></svg>
+                  Attendance (Last 6 Months)
+                </h3>
+                <div className={styles.barChart}>
+                  {(() => {
+                    const months = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
+                    const seed = selected.name.length;
+                    const data = months.map((m, i) => ({ month: m, present: Math.min(22, 18 + ((seed * (i + 1) * 7) % 5)), total: 22 }));
+                    return data.map((d) => {
+                      const pct = Math.round((d.present / d.total) * 100);
+                      return (
+                        <div key={d.month} className={styles.barCol}>
+                          <div className={styles.barValue}>{pct}%</div>
+                          <div className={styles.barTrack}>
+                            <div className={styles.barFill} style={{ height: `${pct}%`, background: pct >= 90 ? '#2e7d32' : pct >= 75 ? '#f59e0b' : '#c62828' }} />
+                          </div>
+                          <div className={styles.barLabel}>{d.month}</div>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              </div>
+
+              {/* Performance Graph */}
+              <div className={styles.graphSection}>
+                <h3 className={styles.graphTitle}>
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 17l4-8 4 5 3-4 4 7" /></svg>
+                  Student Performance (Avg Marks by Exam)
+                </h3>
+                <div className={styles.barChart}>
+                  {(() => {
+                    const exams = ['UT-1', 'UT-2', 'Half', 'UT-3', 'Final'];
+                    const seed = selected.experience;
+                    const data = exams.map((e, i) => ({ exam: e, avg: 55 + ((seed * (i + 2) * 11) % 30) }));
+                    return data.map((d) => (
+                      <div key={d.exam} className={styles.barCol}>
+                        <div className={styles.barValue}>{d.avg}%</div>
+                        <div className={styles.barTrack}>
+                          <div className={styles.barFill} style={{ height: `${d.avg}%`, background: d.avg >= 75 ? '#7c3aed' : d.avg >= 60 ? '#1565c0' : '#e65100' }} />
+                        </div>
+                        <div className={styles.barLabel}>{d.exam}</div>
+                      </div>
+                    ));
+                  })()}
+                </div>
+              </div>
+
+              <div style={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end' }}>
+                <button className={styles.idCardBtn} onClick={() => openPrintable(`ID Card - ${selected.name}`, buildTeacherIdCardHtml(selected))}>
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="2" y="4" width="16" height="12" rx="2" /><circle cx="8" cy="10" r="2" /><path d="M12 8h4M12 11h3" /></svg>
+                  Generate ID Card
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
       {showAddModal && (
-        <div className={styles.modalOverlay} onClick={() => { setShowAddModal(false); setSelectedSubjects([]); }}>
+        <div className={styles.modalOverlay} onClick={() => { setShowAddModal(false); setSelectedSubjects([]); setTeacherIdFile(null); }}>
           <div className={`${styles.modal} ${styles.modalWide}`} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>Add New Teacher</h2>
-              <button className={styles.modalClose} onClick={() => { setShowAddModal(false); setSelectedSubjects([]); }}>
+              <button className={styles.modalClose} onClick={() => { setShowAddModal(false); setSelectedSubjects([]); setTeacherIdFile(null); }}>
                 <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 5l10 10M15 5L5 15" /></svg>
               </button>
             </div>
@@ -296,6 +388,35 @@ export default function AdminTeachersPage() {
                   <label className={styles.formLabel}>Address</label>
                   <textarea className={styles.formTextarea} placeholder="Full address..." />
                 </div>
+
+                {/* ── ID Proof Upload ── */}
+                <div className={styles.formSection}>
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="16" height="12" rx="2" /><circle cx="8" cy="10" r="2" /><path d="M12 8h4M12 11h3" /></svg>
+                  ID Proof
+                </div>
+                <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+                  <label className={styles.formLabel}>Teacher ID Proof (Aadhaar / PAN Card / Passport)</label>
+                  <div className={styles.fileUploadZone}>
+                    <input
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.pdf"
+                      onChange={(e) => setTeacherIdFile(e.target.files?.[0] || null)}
+                    />
+                    {teacherIdFile ? (
+                      <div className={styles.fileChip}>
+                        {teacherIdFile.name}
+                        <button className={styles.fileChipRemove} onClick={(e) => { e.stopPropagation(); setTeacherIdFile(null); }}>×</button>
+                      </div>
+                    ) : (
+                      <div className={styles.fileUploadLabel}>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 14V3M6 7l4-4 4 4" /><path d="M3 14v3h14v-3" /></svg>
+                        <strong>Click to upload</strong>
+                        JPG, PNG or PDF (max 5MB)
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
                   <label className={styles.formLabel}>Subjects {selectedSubjects.length > 0 && `(${selectedSubjects.length} selected)`}</label>
                   <div className={styles.subjectPicker}>
@@ -313,8 +434,8 @@ export default function AdminTeachersPage() {
               </div>
             </div>
             <div className={styles.modalFooter}>
-              <button className={styles.cancelBtn} onClick={() => { setShowAddModal(false); setSelectedSubjects([]); }}>Cancel</button>
-              <button className={styles.submitBtn} onClick={() => { setShowAddModal(false); setSelectedSubjects([]); }}>Add Teacher</button>
+              <button className={styles.cancelBtn} onClick={() => { setShowAddModal(false); setSelectedSubjects([]); setTeacherIdFile(null); }}>Cancel</button>
+              <button className={styles.submitBtn} onClick={() => { setShowAddModal(false); setSelectedSubjects([]); setTeacherIdFile(null); alert('Teacher added successfully!'); }}>Add Teacher</button>
             </div>
           </div>
         </div>

@@ -15,8 +15,8 @@ export function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-export function getRelativeTime(dateStr: string): string {
-  const now = new Date();
+export function getRelativeTime(dateStr: string, from: Date = new Date()): string {
+  const now = from;
   const date = new Date(dateStr);
   const diffMs = now.getTime() - date.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -27,8 +27,8 @@ export function getRelativeTime(dateStr: string): string {
   return formatDate(dateStr);
 }
 
-export function getDaysUntil(dateStr: string): number {
-  const now = new Date();
+export function getDaysUntil(dateStr: string, from: Date = new Date()): number {
+  const now = from;
   const target = new Date(dateStr);
   const diffMs = target.getTime() - now.getTime();
   return Math.ceil(diffMs / (1000 * 60 * 60 * 24));

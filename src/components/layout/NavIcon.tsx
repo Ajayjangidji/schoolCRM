@@ -62,6 +62,20 @@ export default function NavIcon({ name, className }: NavIconProps) {
         <path d="M10 5v5l3 3" />
       </svg>
     ),
+    results: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 2h12v16H4z" />
+        <path d="M7 6h6M7 9h6M7 12h3" />
+        <path d="M12 15l1.5 1.5L16 13" />
+      </svg>
+    ),
+    holidays: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="4" width="14" height="13" rx="2" />
+        <path d="M3 8h14M7 2v4M13 2v4" />
+        <path d="M10 10.5l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2-1.45-1.4 2-.3z" />
+      </svg>
+    ),
     transport: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 13V5a2 2 0 012-2h8a2 2 0 012 2v8" />

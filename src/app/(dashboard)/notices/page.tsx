@@ -1,9 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { getNotices } from '@/hooks/use-data';
-import { formatDate, getRelativeTime } from '@/lib/utils';
+import { getNotices, getToday } from '@/hooks/use-data';
+import { formatDate, formatFileSize, getRelativeTime } from '@/lib/utils';
 import { NOTICE_CATEGORY_LABELS } from '@/lib/constants';
+import { buildNoticeAttachmentHtml, downloadOrPrint } from '@/lib/print';
+import { useToast } from '@/components/common/Toast';
+import type { Attachment, Notice } from '@/types';
 import styles from './notices.module.css';
 
 type CategoryFilter = 'all' | 'holiday' | 'exam' | 'event' | 'circular' | 'fee' | 'general';
@@ -36,6 +39,31 @@ export default function NoticesPage() {
   const [acknowledged, setAcknowledged] = useState<Set<string>>(
     new Set(allNotices.filter((n) => n.isAcknowledged).map((n) => n.id))
   );
+  const [readIds, setReadIds] = useState<Set<string>>(
+    new Set(allNotices.filter((n) => n.isRead).map((n) => n.id))
+  );
+  const { showToast, toastNode } = useToast();
+  const todayDate = new Date(getToday());
+
+  function toggleNotice(id: string) {
+    setExpandedId((current) => (current === id ? null : id));
+    setReadIds((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
+  }
+
+  function acknowledge(notice: Notice) {
+    // TODO: POST /api/notices/:id/acknowledge when backend is connected
+    setAcknowledged((prev) => new Set(prev).add(notice.id));
+    showToast('Notice acknowledged. The school has been informed.');
+  }
+
+  function downloadAttachment(notice: Notice, attachment: Attachment) {
+    const opened = downloadOrPrint(
+      attachment.url,
+      attachment.name,
+      buildNoticeAttachmentHtml(attachment.name, { title: notice.title, postedDate: notice.postedDate }),
+    );
+    if (!opened) showToast('Pop-up blocked. Please allow pop-ups to download.', 'error');
+  }
 
   const categories: { key: CategoryFilter; label: string }[] = [
     { key: 'all', label: 'All' },
@@ -54,7 +82,7 @@ export default function NoticesPage() {
   const pinnedNotices = filtered.filter((n) => n.isPinned);
   const regularNotices = filtered.filter((n) => !n.isPinned);
 
-  const unreadCount = allNotices.filter((n) => !n.isRead).length;
+  const unreadCount = allNotices.filter((n) => !readIds.has(n.id)).length;
   const pendingAck = allNotices.filter((n) => n.requiresAcknowledgement && !acknowledged.has(n.id)).length;
 
   return (
@@ -114,11 +142,11 @@ export default function NoticesPage() {
               return (
                 <div
                   key={notice.id}
-                  className={`${styles.noticeCard} ${!notice.isRead ? styles.noticeUnread : ''} ${styles.noticePinned}`}
+                  className={`${styles.noticeCard} ${!readIds.has(notice.id) ? styles.noticeUnread : ''} ${styles.noticePinned}`}
                 >
                   <div
                     className={styles.noticeMain}
-                    onClick={() => setExpandedId(isExpanded ? null : notice.id)}
+                    onClick={() => toggleNotice(notice.id)}
                   >
                     <div className={styles.noticeTop}>
                       <div className={styles.noticeTags}>
@@ -130,9 +158,9 @@ export default function NoticesPage() {
                             {notice.priority === 'urgent' ? 'Urgent' : 'Important'}
                           </span>
                         )}
-                        {!notice.isRead && <span className={styles.unreadDot} />}
+                        {!readIds.has(notice.id) && <span className={styles.unreadDot} />}
                       </div>
-                      <span className={styles.noticeDate}>{getRelativeTime(notice.postedDate)}</span>
+                      <span className={styles.noticeDate}>{getRelativeTime(notice.postedDate, todayDate)}</span>
                     </div>
                     <div className={styles.noticeTitle}>{notice.title}</div>
                     {!isExpanded && (
@@ -155,6 +183,20 @@ export default function NoticesPage() {
                         <span>Posted: {formatDate(notice.postedDate)}</span>
                         {notice.expiryDate && <span>Expires: {formatDate(notice.expiryDate)}</span>}
                       </div>
+                      {notice.attachments && notice.attachments.length > 0 && (
+                        <div className={styles.attachList}>
+                          {notice.attachments.map((att) => (
+                            <button
+                              key={att.id}
+                              className={styles.attachItem}
+                              onClick={(e) => { e.stopPropagation(); downloadAttachment(notice, att); }}
+                            >
+                              <span className={styles.attachName}>{att.name}</span>
+                              <span className={styles.attachSize}>{formatFileSize(att.size)} · Download</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
                       {notice.requiresAcknowledgement && (
                         <div className={styles.ackSection}>
                           {isAcked ? (
@@ -167,7 +209,7 @@ export default function NoticesPage() {
                               className={styles.ackBtn}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setAcknowledged((prev) => new Set(prev).add(notice.id));
+                                acknowledge(notice);
                               }}
                             >
                               Acknowledge
@@ -200,11 +242,11 @@ export default function NoticesPage() {
               return (
                 <div
                   key={notice.id}
-                  className={`${styles.noticeCard} ${!notice.isRead ? styles.noticeUnread : ''}`}
+                  className={`${styles.noticeCard} ${!readIds.has(notice.id) ? styles.noticeUnread : ''}`}
                 >
                   <div
                     className={styles.noticeMain}
-                    onClick={() => setExpandedId(isExpanded ? null : notice.id)}
+                    onClick={() => toggleNotice(notice.id)}
                   >
                     <div className={styles.noticeTop}>
                       <div className={styles.noticeTags}>
@@ -216,9 +258,9 @@ export default function NoticesPage() {
                             {notice.priority === 'urgent' ? 'Urgent' : 'Important'}
                           </span>
                         )}
-                        {!notice.isRead && <span className={styles.unreadDot} />}
+                        {!readIds.has(notice.id) && <span className={styles.unreadDot} />}
                       </div>
-                      <span className={styles.noticeDate}>{getRelativeTime(notice.postedDate)}</span>
+                      <span className={styles.noticeDate}>{getRelativeTime(notice.postedDate, todayDate)}</span>
                     </div>
                     <div className={styles.noticeTitle}>{notice.title}</div>
                     {!isExpanded && (
@@ -241,6 +283,20 @@ export default function NoticesPage() {
                         <span>Posted: {formatDate(notice.postedDate)}</span>
                         {notice.expiryDate && <span>Expires: {formatDate(notice.expiryDate)}</span>}
                       </div>
+                      {notice.attachments && notice.attachments.length > 0 && (
+                        <div className={styles.attachList}>
+                          {notice.attachments.map((att) => (
+                            <button
+                              key={att.id}
+                              className={styles.attachItem}
+                              onClick={(e) => { e.stopPropagation(); downloadAttachment(notice, att); }}
+                            >
+                              <span className={styles.attachName}>{att.name}</span>
+                              <span className={styles.attachSize}>{formatFileSize(att.size)} · Download</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
                       {notice.requiresAcknowledgement && (
                         <div className={styles.ackSection}>
                           {isAcked ? (
@@ -253,7 +309,7 @@ export default function NoticesPage() {
                               className={styles.ackBtn}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setAcknowledged((prev) => new Set(prev).add(notice.id));
+                                acknowledge(notice);
                               }}
                             >
                               Acknowledge
@@ -282,6 +338,7 @@ export default function NoticesPage() {
           <div className={styles.emptyDesc}>There are no notices in this category.</div>
         </div>
       )}
+      {toastNode}
     </div>
   );
 }

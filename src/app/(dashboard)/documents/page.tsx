@@ -1,8 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { getDocuments } from '@/hooks/use-data';
+import { getDocuments, getStudent } from '@/hooks/use-data';
 import { formatDate, formatFileSize } from '@/lib/utils';
+import { buildDocumentHtml, downloadOrPrint } from '@/lib/print';
+import { useToast } from '@/components/common/Toast';
+import Modal from '@/components/common/Modal';
+import type { Document } from '@/types';
 import styles from './documents.module.css';
 
 type CategoryFilter = 'all' | 'report-card' | 'fee-receipt' | 'certificate' | 'tc' | 'id-card' | 'medical';
@@ -12,6 +16,15 @@ const CATEGORY_LABELS: Record<string, string> = {
   'fee-receipt': 'Fee Receipt',
   certificate: 'Certificate',
   tc: 'Transfer Certificate',
+  'id-card': 'ID Card',
+  medical: 'Medical',
+};
+
+const CATEGORY_TAB_LABELS: Record<string, string> = {
+  'report-card': 'Report Cards',
+  'fee-receipt': 'Fee Receipts',
+  certificate: 'Certificates',
+  tc: 'Transfer Certificates',
   'id-card': 'ID Card',
   medical: 'Medical',
 };
@@ -47,16 +60,24 @@ function getFileIcon(fileType: string) {
 
 export default function DocumentsPage() {
   const allDocs = getDocuments();
+  const student = getStudent();
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [previewDoc, setPreviewDoc] = useState<Document | null>(null);
+  const { showToast, toastNode } = useToast();
 
   const categories: { key: CategoryFilter; label: string }[] = [
     { key: 'all', label: 'All' },
-    { key: 'report-card', label: 'Report Cards' },
-    { key: 'fee-receipt', label: 'Fee Receipts' },
-    { key: 'certificate', label: 'Certificates' },
-    { key: 'id-card', label: 'ID Card' },
+    ...(Object.keys(CATEGORY_TAB_LABELS) as CategoryFilter[])
+      .filter((key) => allDocs.some((d) => d.category === key))
+      .map((key) => ({ key, label: CATEGORY_TAB_LABELS[key] })),
   ];
+
+  function downloadDocument(doc: Document) {
+    const opened = downloadOrPrint(doc.downloadUrl, doc.name, buildDocumentHtml(doc, student));
+    if (!opened) showToast('Pop-up blocked. Please allow pop-ups to download.', 'error');
+    else if (!doc.downloadUrl || doc.downloadUrl === '#') showToast('Choose "Save as PDF" in the print dialog to download');
+  }
 
   let filtered = activeCategory === 'all'
     ? allDocs
@@ -168,10 +189,10 @@ export default function DocumentsPage() {
                   </div>
                 </div>
                 <div className={styles.docActions}>
-                  <button className={styles.viewBtn} title="View">
+                  <button className={styles.viewBtn} title="View" aria-label={`View ${doc.name}`} onClick={() => setPreviewDoc(doc)}>
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="9" cy="9" r="3" /><path d="M1 9s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z" /></svg>
                   </button>
-                  <button className={styles.downloadBtn} title="Download">
+                  <button className={styles.downloadBtn} title="Download" aria-label={`Download ${doc.name}`} onClick={() => downloadDocument(doc)}>
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 2v10m0 0l-3.5-3.5M9 12l3.5-3.5" /><path d="M2 13v2a1.5 1.5 0 001.5 1.5h11A1.5 1.5 0 0016 15v-2" /></svg>
                   </button>
                 </div>
@@ -180,6 +201,34 @@ export default function DocumentsPage() {
           })}
         </div>
       )}
+
+      {previewDoc && (
+        <Modal
+          title={previewDoc.name}
+          subtitle={`${CATEGORY_LABELS[previewDoc.category]} · ${formatFileSize(previewDoc.fileSize)} · ${previewDoc.fileType.toUpperCase()}`}
+          onClose={() => setPreviewDoc(null)}
+          size="md"
+          footer={
+            <>
+              <button className={styles.previewClose} onClick={() => setPreviewDoc(null)}>Close</button>
+              <button className={styles.previewDownload} onClick={() => downloadDocument(previewDoc)}>Download</button>
+            </>
+          }
+        >
+          <div className={styles.previewSheet}>
+            <div className={styles.previewBrand}>SchoolAI International Academy</div>
+            <div className={styles.previewTitle}>{previewDoc.name}</div>
+            <dl className={styles.previewGrid}>
+              <div><dt>Student</dt><dd>{student.name}</dd></div>
+              <div><dt>Class</dt><dd>{student.class}-{student.section}</dd></div>
+              <div><dt>Roll No.</dt><dd>{student.rollNumber}</dd></div>
+              <div><dt>Uploaded</dt><dd>{formatDate(previewDoc.uploadDate)}</dd></div>
+            </dl>
+            <div className={styles.previewNote}>This is a preview. Use Download to save the full document.</div>
+          </div>
+        </Modal>
+      )}
+      {toastNode}
     </div>
   );
 }

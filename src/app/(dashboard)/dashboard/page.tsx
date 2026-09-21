@@ -6,8 +6,12 @@ import {
   getFeeDetails,
   getNotices,
   getTodayTimetable,
+  getUpcomingEvents,
+  getToday,
+  getStudent,
+  getCurrentHour,
 } from '@/hooks/use-data';
-import { formatCurrency, getSubjectColor, formatDate } from '@/lib/utils';
+import { formatCurrency, getSubjectColor, formatDate, getDaysUntil } from '@/lib/utils';
 import { NOTICE_CATEGORY_LABELS } from '@/lib/constants';
 import styles from './dashboard.module.css';
 
@@ -33,6 +37,13 @@ function getStatusStyle(status: string): { bg: string; text: string } {
   return map[status] || map.pending;
 }
 
+const EVENT_TYPE_STYLE: Record<string, { bg: string; text: string; label: string }> = {
+  exam: { bg: 'var(--danger-light)', text: 'var(--danger-dark)', label: 'Exam' },
+  holiday: { bg: 'var(--success-light)', text: 'var(--success-dark)', label: 'Holiday' },
+  event: { bg: 'var(--primary-light)', text: 'var(--primary-dark)', label: 'Event' },
+  ptm: { bg: 'var(--warning-light)', text: 'var(--warning-dark)', label: 'PTM' },
+};
+
 export default function DashboardPage() {
   const todayAttendance = getTodayAttendance();
   const attendanceStats = getAttendanceStats();
@@ -40,6 +51,10 @@ export default function DashboardPage() {
   const feeDetails = getFeeDetails();
   const notices = getNotices();
   const todayTimetable = getTodayTimetable();
+  const student = getStudent();
+  const currentHour = getCurrentHour();
+  const today = new Date(getToday());
+  const upcomingEvents = getUpcomingEvents();
 
   const pendingHW = allHomework.filter((h) => h.status === 'pending' || h.status === 'overdue');
   const nextInstallment = feeDetails.installments.find((i) => i.status === 'pending');
@@ -48,6 +63,16 @@ export default function DashboardPage() {
 
   return (
     <div className={styles.page}>
+      {todayAttendance.status === 'absent' && (
+        <div className={styles.alertBanner} role="alert">
+          <div>
+            <div className={styles.alertBannerTitle}>{student.name} is marked absent today</div>
+            <div className={styles.alertBannerText}>An instant alert was sent to your phone. If this is unexpected, contact the class teacher.</div>
+          </div>
+          <Link href="/leave" className={styles.alertBannerBtn}>Apply Leave</Link>
+        </div>
+      )}
+
       {/* ── Stat Cards ── */}
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
@@ -197,7 +222,7 @@ export default function DashboardPage() {
           <div className={styles.cardBody}>
             {classPeriods.map((period) => (
               <div key={period.period} className={styles.timetableItem}>
-                <span className={`${styles.periodNum} ${period.period === 3 ? styles.periodCurrent : ''}`}>
+                <span className={`${styles.periodNum} ${parseInt(period.startTime) <= currentHour && parseInt(period.endTime) > currentHour ? styles.periodCurrent : ''}`}>
                   {period.period}
                 </span>
                 <div className={styles.timetableInfo}>
@@ -237,8 +262,38 @@ export default function DashboardPage() {
                   <span className={styles.feeDueAmount}>{formatCurrency(nextInstallment.amount)}</span>
                 </div>
               )}
-              <button className={styles.payButton}>Pay Now</button>
+              <Link href="/fees" className={styles.payButton}>Pay Now</Link>
             </div>
+          </div>
+        </div>
+
+        {/* Upcoming Events */}
+        <div className={`${styles.card} ${styles.cardWide}`}>
+          <div className={styles.cardHeader}>
+            <span className={styles.cardTitle}>Upcoming Events</span>
+            <Link href="/timetable" className={styles.cardAction}>Exam Schedule</Link>
+          </div>
+          <div className={styles.eventsGrid}>
+            {upcomingEvents.map((event) => {
+              const eventStyle = EVENT_TYPE_STYLE[event.type];
+              const daysLeft = getDaysUntil(event.date, today);
+              const eventDate = new Date(event.date);
+              return (
+                <div key={event.id} className={styles.eventItem}>
+                  <div className={styles.eventDate}>
+                    <span className={styles.eventDay}>{eventDate.getDate()}</span>
+                    <span className={styles.eventMonth}>{eventDate.toLocaleDateString('en-IN', { month: 'short' })}</span>
+                  </div>
+                  <div className={styles.eventInfo}>
+                    <div className={styles.eventTitle}>{event.title}</div>
+                    <div className={styles.eventMeta}>
+                      <span className={styles.eventTag} style={{ background: eventStyle.bg, color: eventStyle.text }}>{eventStyle.label}</span>
+                      <span>{event.time ? `${event.time} · ` : ''}{daysLeft === 0 ? 'Today' : daysLeft === 1 ? 'Tomorrow' : `in ${daysLeft} days`}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

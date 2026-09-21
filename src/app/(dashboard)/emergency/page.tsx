@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { getEmergencyAlerts, getEmergencyContacts, getStudent } from '@/hooks/use-data';
+import { getEmergencyAlerts, getEmergencyContacts, getStudent, getToday } from '@/hooks/use-data';
 import { getRelativeTime } from '@/lib/utils';
+import { useToast } from '@/components/common/Toast';
 import styles from './emergency.module.css';
 
 type ContactFilter = 'all' | 'school' | 'medical' | 'transport' | 'admin';
@@ -36,6 +37,15 @@ export default function EmergencyPage() {
   const contacts = getEmergencyContacts();
   const student = getStudent();
   const [contactFilter, setContactFilter] = useState<ContactFilter>('all');
+  const [acknowledged, setAcknowledged] = useState<Set<string>>(new Set());
+  const { showToast, toastNode } = useToast();
+  const todayDate = new Date(getToday());
+
+  function acknowledgeAlert(id: string) {
+    // TODO: POST /api/emergency/:id/acknowledge when backend is connected
+    setAcknowledged((prev) => new Set(prev).add(id));
+    showToast('Acknowledged. The school can see you have read this alert.');
+  }
 
   const activeAlerts = alerts.filter(a => a.isActive);
   const pastAlerts = alerts.filter(a => !a.isActive);
@@ -113,7 +123,7 @@ export default function EmergencyPage() {
                         <span className={styles.severityBadge} style={{ color: severity.color, background: severity.bg }}>
                           {severity.label}
                         </span>
-                        <span>{getRelativeTime(alert.issuedAt)}</span>
+                        <span>{getRelativeTime(alert.issuedAt, todayDate)}</span>
                         <span>&middot;</span>
                         <span>{alert.issuedBy}</span>
                       </div>
@@ -129,6 +139,16 @@ export default function EmergencyPage() {
                       </div>
                     </div>
                   )}
+                  <div className={styles.ackRow}>
+                    {acknowledged.has(alert.id) ? (
+                      <span className={styles.ackDone}>
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8l3.5 3.5L13 4.5" /></svg>
+                        Acknowledged
+                      </span>
+                    ) : (
+                      <button className={styles.ackBtn} onClick={() => acknowledgeAlert(alert.id)}>I have read this alert</button>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -194,7 +214,7 @@ export default function EmergencyPage() {
                         <span className={styles.severityBadge} style={{ color: severity.color, background: severity.bg }}>
                           {severity.label}
                         </span>
-                        <span>{getRelativeTime(alert.issuedAt)}</span>
+                        <span>{getRelativeTime(alert.issuedAt, todayDate)}</span>
                         <span className={styles.resolvedBadge}>Resolved</span>
                       </div>
                     </div>
@@ -206,6 +226,7 @@ export default function EmergencyPage() {
           </div>
         </div>
       )}
+      {toastNode}
     </div>
   );
 }

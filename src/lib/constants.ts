@@ -20,6 +20,11 @@ export const NAV_ITEMS = [
     icon: 'academic',
   },
   {
+    label: 'Exams & Results',
+    href: '/results',
+    icon: 'results',
+  },
+  {
     label: 'Fees',
     href: '/fees',
     icon: 'fees',
@@ -28,6 +33,11 @@ export const NAV_ITEMS = [
     label: 'Notices',
     href: '/notices',
     icon: 'notices',
+  },
+  {
+    label: 'Holiday Calendar',
+    href: '/holidays',
+    icon: 'holidays',
   },
   {
     label: 'Leave Request',

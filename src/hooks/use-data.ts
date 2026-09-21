@@ -22,6 +22,7 @@ import type {
   Homework,
   ExamResult,
   FeeDetails,
+  FeeInstallment,
   Notice,
   LeaveRequest,
   TimetablePeriod,
@@ -36,12 +37,34 @@ import type {
   Notification,
   EmergencyAlert,
   EmergencyContact,
+  AttendanceAlert,
+  ExamTrendPoint,
+  Holiday,
+  BusStop,
+  BusTripKey,
+  BusLiveState,
+  UpcomingEvent,
+  MediaItem,
+  NotificationPreferences,
+  SupportInfo,
 } from '@/types';
 
 // ┌──────────────────────────────────────────────────┐
 // │  FLIP THIS TO `false` TO USE REAL API DATA       │
 // └──────────────────────────────────────────────────┘
 const USE_MOCK_DATA = true;
+
+// ── App clock ──
+
+export function getToday(): string {
+  if (USE_MOCK_DATA) return mock.MOCK_TODAY;
+  return new Date().toISOString().slice(0, 10);
+}
+
+export function getCurrentHour(): number {
+  if (USE_MOCK_DATA) return mock.MOCK_CURRENT_HOUR;
+  return new Date().getHours();
+}
 
 // ── Student & Parent ──
 
@@ -77,6 +100,24 @@ export function getMonthlyAttendance(month?: string): AttendanceRecord[] {
   throw new Error('API not implemented');
 }
 
+export function getAttendanceCalendarMonths(): string[] {
+  if (USE_MOCK_DATA) return Object.keys(mock.mockAttendanceCalendar).sort();
+  // TODO: Replace with API call → GET /api/attendance/months?studentId=:id
+  throw new Error('API not implemented');
+}
+
+export function getAttendanceCalendar(monthKey: string): Record<number, AttendanceRecord['status']> {
+  if (USE_MOCK_DATA) return mock.mockAttendanceCalendar[monthKey] || {};
+  // TODO: Replace with API call → GET /api/attendance/calendar?studentId=:id&month=:monthKey (YYYY-MM)
+  throw new Error('API not implemented');
+}
+
+export function getAttendanceAlerts(): AttendanceAlert[] {
+  if (USE_MOCK_DATA) return mock.mockAttendanceAlerts;
+  // TODO: Replace with API call → GET /api/attendance/alerts?studentId=:id
+  throw new Error('API not implemented');
+}
+
 // ── Homework ──
 
 export function getHomeworkList(filter?: string): Homework[] {
@@ -102,11 +143,38 @@ export function getExamResult(examId?: string): ExamResult {
   throw new Error('API not implemented');
 }
 
+export function getAllExamResults(): ExamResult[] {
+  if (USE_MOCK_DATA) return mock.mockAllExamResults;
+  // TODO: Replace with API call → GET /api/exams/results?studentId=:id
+  throw new Error('API not implemented');
+}
+
+export function getHolidays(): Holiday[] {
+  if (USE_MOCK_DATA) return mock.mockHolidays;
+  // TODO: Replace with API call → GET /api/calendar/holidays?year=:academicYear
+  throw new Error('API not implemented');
+}
+
+export function getExamHistory(): ExamTrendPoint[] {
+  if (USE_MOCK_DATA) return mock.mockExamHistory;
+  // TODO: Replace with API call → GET /api/exams/history?studentId=:id
+  throw new Error('API not implemented');
+}
+
 // ── Fees ──
 
 export function getFeeDetails(): FeeDetails {
   if (USE_MOCK_DATA) return mock.mockFeeDetails;
   // TODO: Replace with API call → GET /api/fees?studentId=:id
+  throw new Error('API not implemented');
+}
+
+export function payInstallment(
+  installment: FeeInstallment,
+  mode: NonNullable<FeeInstallment['paymentMode']>,
+): Promise<FeeInstallment> {
+  if (USE_MOCK_DATA) return mock.mockPayInstallment(installment, mode);
+  // TODO: Replace with payment gateway → POST /api/fees/:installmentId/pay
   throw new Error('API not implemented');
 }
 
@@ -154,6 +222,29 @@ export function getTransportInfo(): TransportInfo {
   throw new Error('API not implemented');
 }
 
+export function getTransportOpted(): boolean {
+  if (USE_MOCK_DATA) return mock.mockTransportOpted;
+  // TODO: Replace with API call → GET /api/transport/enrollment?studentId=:id
+  throw new Error('API not implemented');
+}
+
+export function getBusStops(): BusStop[] {
+  if (USE_MOCK_DATA) return mock.mockBusStops;
+  // TODO: Replace with API call → GET /api/transport/route?studentId=:id
+  throw new Error('API not implemented');
+}
+
+/** Live bus feed. Returns an unsubscribe function. */
+export function subscribeBusLocation(
+  trip: BusTripKey,
+  stopCount: number,
+  onUpdate: (state: BusLiveState) => void,
+): () => void {
+  if (USE_MOCK_DATA) return mock.startMockBusFeed(trip, stopCount, onUpdate);
+  // TODO: Replace with WebSocket / SSE → /api/transport/live?studentId=:id&trip=:trip
+  throw new Error('API not implemented');
+}
+
 // ── Chat ──
 
 export function getChatThreads(): ChatThread[] {
@@ -184,6 +275,20 @@ export function getEventAlbums(): EventAlbum[] {
   throw new Error('API not implemented');
 }
 
+export function getAlbumMedia(albumId: string): MediaItem[] {
+  if (USE_MOCK_DATA) return mock.mockAlbumMedia[albumId] || [];
+  // TODO: Replace with API call → GET /api/gallery/albums/:albumId/media
+  throw new Error('API not implemented');
+}
+
+// ── Events ──
+
+export function getUpcomingEvents(): UpcomingEvent[] {
+  if (USE_MOCK_DATA) return mock.mockUpcomingEvents;
+  // TODO: Replace with API call → GET /api/events/upcoming?classId=:classId
+  throw new Error('API not implemented');
+}
+
 // ── Daily Summary ──
 
 export function getDailySummary(): DailySummary {
@@ -209,5 +314,19 @@ export function getEmergencyAlerts(): EmergencyAlert[] {
 
 export function getEmergencyContacts(): EmergencyContact[] {
   if (USE_MOCK_DATA) return mock.mockEmergencyContacts;
+  throw new Error('API not implemented');
+}
+
+// ── Preferences & Support ──
+
+export function getNotificationPreferences(): NotificationPreferences {
+  if (USE_MOCK_DATA) return mock.mockNotificationPreferences;
+  // TODO: Replace with API call → GET /api/parents/:id/notification-preferences
+  throw new Error('API not implemented');
+}
+
+export function getSupportInfo(): SupportInfo {
+  if (USE_MOCK_DATA) return mock.mockSupportInfo;
+  // TODO: Replace with API call → GET /api/support
   throw new Error('API not implemented');
 }

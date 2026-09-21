@@ -14,6 +14,9 @@ export default function AdminNoticesPage() {
   const [filter, setFilter] = useState<FilterType>('all');
   const [search, setSearch] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [scheduleEnabled, setScheduleEnabled] = useState(false);
+  const [scheduleDate, setScheduleDate] = useState('');
+  const [scheduleTime, setScheduleTime] = useState('09:00');
 
   const published = notices.filter((n) => n.isPublished);
   const drafts = notices.filter((n) => !n.isPublished);
@@ -254,11 +257,75 @@ export default function AdminNoticesPage() {
                   </select>
                 </div>
               </div>
+
+              {/* Schedule Section */}
+              <div className={styles.scheduleSection}>
+                <label className={styles.scheduleToggle}>
+                  <input
+                    type="checkbox"
+                    checked={scheduleEnabled}
+                    onChange={(e) => setScheduleEnabled(e.target.checked)}
+                    className={styles.scheduleCheckbox}
+                  />
+                  <div className={styles.scheduleToggleTrack}>
+                    <div className={styles.scheduleToggleThumb} />
+                  </div>
+                  <div className={styles.scheduleToggleLabel}>
+                    <span className={styles.formLabel} style={{ marginBottom: 0 }}>Schedule for later</span>
+                    <span className={styles.scheduleHint}>Set a future date & time to auto-publish</span>
+                  </div>
+                </label>
+                {scheduleEnabled && (
+                  <div className={styles.scheduleFields}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{ verticalAlign: '-2px', marginRight: '4px' }}>
+                          <rect x="3" y="4" width="14" height="12" rx="1" />
+                          <path d="M7 2v4M13 2v4M3 8h14" />
+                        </svg>
+                        Publish Date
+                      </label>
+                      <input
+                        className={styles.formInput}
+                        type="date"
+                        value={scheduleDate}
+                        onChange={(e) => setScheduleDate(e.target.value)}
+                        min={new Date().toISOString().split('T')[0]}
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{ verticalAlign: '-2px', marginRight: '4px' }}>
+                          <circle cx="10" cy="10" r="7" />
+                          <path d="M10 6v4l3 2" />
+                        </svg>
+                        Publish Time
+                      </label>
+                      <input
+                        className={styles.formInput}
+                        type="time"
+                        value={scheduleTime}
+                        onChange={(e) => setScheduleTime(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             <div className={styles.modalFooter}>
-              <button className={styles.cancelBtn} onClick={() => setShowCreateModal(false)}>Cancel</button>
-              <button className={styles.draftSaveBtn} onClick={() => setShowCreateModal(false)}>Save as Draft</button>
-              <button className={styles.submitBtn} onClick={() => setShowCreateModal(false)}>Publish Now</button>
+              <button className={styles.cancelBtn} onClick={() => { setShowCreateModal(false); setScheduleEnabled(false); setScheduleDate(''); setScheduleTime('09:00'); }}>Cancel</button>
+              <button className={styles.draftSaveBtn} onClick={() => { setShowCreateModal(false); setScheduleEnabled(false); setScheduleDate(''); setScheduleTime('09:00'); }}>Save as Draft</button>
+              {scheduleEnabled ? (
+                <button className={styles.scheduleBtn} onClick={() => { alert(`Notice scheduled for ${scheduleDate} at ${scheduleTime}`); setShowCreateModal(false); setScheduleEnabled(false); setScheduleDate(''); setScheduleTime('09:00'); }}>
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <circle cx="10" cy="10" r="7" />
+                    <path d="M10 6v4l3 2" />
+                  </svg>
+                  Schedule Publish
+                </button>
+              ) : (
+                <button className={styles.submitBtn} onClick={() => { setShowCreateModal(false); setScheduleEnabled(false); }}>Publish Now</button>
+              )}
             </div>
           </div>
         </div>

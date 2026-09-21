@@ -87,6 +87,9 @@ export interface ExamResult {
   overallGrade: string;
   rank?: number;
   remarks?: string;
+  examDate?: string;
+  classAverage?: number;
+  classSize?: number;
 }
 
 export interface FeeHead {
@@ -184,6 +187,22 @@ export interface TransportInfo {
   pickupTime: string;
   dropStop: string;
   dropTime: string;
+  vehicleNumber: string;
+  vehicleModel: string;
+  vehicleCapacity: number;
+  driverAddress: string;
+  driverLicenseNo: string;
+  driverExperienceYears: number;
+  attendantAddress?: string;
+}
+
+export interface Holiday {
+  id: string;
+  name: string;
+  date: string;
+  endDate?: string;
+  type: 'national' | 'festival' | 'school' | 'vacation';
+  description?: string;
 }
 
 export interface BusLocation {
@@ -314,3 +333,76 @@ export type SubjectColor =
   | 'computer'
   | 'art'
   | 'sports';
+
+export interface AttendanceAlert {
+  id: string;
+  date: string;
+  message: string;
+  channels: Array<'push' | 'sms' | 'email'>;
+  sentAt: string;
+}
+
+export interface ExamTrendPoint {
+  id: string;
+  examName: string;
+  shortLabel: string;
+  totalPercentage: number;
+  classAverage: number;
+  subjects: Array<{ subject: string; percentage: number }>;
+}
+
+export interface BusStop {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  pickupTime: string;
+  dropTime: string;
+  isChildStop?: boolean;
+  isSchool?: boolean;
+}
+
+export type BusTripKey = 'morning' | 'afternoon';
+
+export interface BusLiveState {
+  progress: number;
+  speedKmph: number;
+  status: 'moving' | 'stopped' | 'offline';
+  lastUpdated: string;
+}
+
+export interface UpcomingEvent {
+  id: string;
+  title: string;
+  date: string;
+  time?: string;
+  type: 'exam' | 'holiday' | 'event' | 'ptm';
+}
+
+export interface MediaItem {
+  id: string;
+  albumId: string;
+  type: 'photo' | 'video';
+  caption: string;
+  duration?: string;
+  hue: number;
+}
+
+export interface NotificationPreferences {
+  attendanceAlerts: boolean;
+  homeworkReminders: boolean;
+  feeReminders: boolean;
+  noticeUpdates: boolean;
+  transportAlerts: boolean;
+  chatMessages: boolean;
+  dailySummary: boolean;
+  dailySummaryTime: string;
+  channels: { push: boolean; sms: boolean; email: boolean };
+}
+
+export interface SupportInfo {
+  phone: string;
+  email: string;
+  hours: string;
+  faqs: Array<{ id: string; question: string; answer: string }>;
+}

@@ -427,3 +427,20 @@
   text-align: center;
   padding: var(--space-6) 0;
 }
+
+.historyReceipt {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  transition: all var(--transition-fast);
+}
+
+.historyReceipt:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}

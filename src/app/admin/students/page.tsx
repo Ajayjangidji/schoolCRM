@@ -1,16 +1,51 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { getAdminStudents, getSchoolStats } from '@/hooks/use-admin-data';
+import { getAdminStudents, getSchoolStats, getFeeStructure } from '@/hooks/use-admin-data';
 import { getInitials, formatDate } from '@/lib/utils';
+import { openPrintable, escapeHtml } from '@/lib/print';
 import type { AdminStudent } from '@/hooks/use-admin-data';
 import styles from './students.module.css';
 
+const INR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
 const AVATAR_COLORS = ['#7c3aed', '#1565c0', '#2e7d32', '#e65100', '#c62828', '#00695c', '#4527a0', '#ef6c00', '#0277bd', '#6a1b9a'];
 
 const CLASSES = ['All', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
 const SECTIONS = ['All', 'A', 'B'];
 const FEE_FILTERS = ['All', 'Paid', 'Pending', 'Overdue'];
+
+function buildStudentIdCardHtml(student: AdminStudent): string {
+  const bgColor = AVATAR_COLORS[0];
+  return `<div style="max-width:380px;margin:40px auto;font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">
+    <div style="background:linear-gradient(135deg,#7c3aed,#2563EB);border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+      <div style="padding:20px 24px;color:#fff;text-align:center;">
+        <div style="font-size:18px;font-weight:700;letter-spacing:.02em;">SchoolAI International Academy</div>
+        <div style="font-size:11px;opacity:.8;margin-top:2px;">CBSE Affiliated | Student Identity Card</div>
+      </div>
+      <div style="background:#fff;padding:24px;text-align:center;">
+        <div style="width:80px;height:80px;border-radius:50%;background:${bgColor}18;color:${bgColor};display:inline-flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;border:3px solid ${bgColor};margin-bottom:12px;">${escapeHtml(getInitials(student.name))}</div>
+        <div style="font-size:20px;font-weight:700;color:#111827;">${escapeHtml(student.name)}</div>
+        <div style="font-size:13px;color:#6B7280;margin-top:4px;">Class ${escapeHtml(student.class)}-${escapeHtml(student.section)} | Roll No: ${escapeHtml(student.rollNumber)}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-top:16px;text-align:left;font-size:12px;">
+          <div><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Father's Name</span><strong>${escapeHtml(student.fatherName)}</strong></div>
+          <div><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Mother's Name</span><strong>${escapeHtml(student.motherName)}</strong></div>
+          <div><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Date of Birth</span><strong>${escapeHtml(formatDate(student.dob))}</strong></div>
+          <div><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Blood Group</span><strong>${escapeHtml(student.bloodGroup)}</strong></div>
+          <div style="grid-column:1/-1;"><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Address</span><strong>${escapeHtml(student.address)}</strong></div>
+          <div><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Phone</span><strong>${escapeHtml(student.phone)}</strong></div>
+          <div><span style="color:#9CA3AF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">Admission Date</span><strong>${escapeHtml(formatDate(student.admissionDate))}</strong></div>
+        </div>
+      </div>
+      <div style="background:#F9FAFB;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#6B7280;">
+        <span>ID: ${escapeHtml(student.id)}</span>
+        <span>Valid: 2026-27</span>
+      </div>
+      <div style="background:linear-gradient(135deg,#7c3aed,#2563EB);padding:10px 24px;text-align:center;">
+        <div style="font-size:10px;color:rgba(255,255,255,0.7);">If found, please return to SchoolAI International Academy</div>
+      </div>
+    </div>
+  </div>`;
+}
 
 export default function AdminStudentsPage() {
   const allStudents = getAdminStudents();
@@ -22,8 +57,12 @@ export default function AdminStudentsPage() {
   const [feeFilter, setFeeFilter] = useState('All');
   const [selectedStudent, setSelectedStudent] = useState<AdminStudent | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [studentIdFile, setStudentIdFile] = useState<File | null>(null);
+  const [fatherIdFile, setFatherIdFile] = useState<File | null>(null);
+  const [motherIdFile, setMotherIdFile] = useState<File | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 10;
+  const feeStructure = getFeeStructure();
 
   const filtered = useMemo(() => {
     let result = allStudents;
@@ -374,6 +413,15 @@ export default function AdminStudentsPage() {
               })()}
             </div>
             <div className={styles.modalFooter}>
+              <button
+                className={styles.idCardBtn}
+                onClick={() => {
+                  if (selectedStudent) openPrintable(`ID Card - ${selectedStudent.name}`, buildStudentIdCardHtml(selectedStudent));
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="2" y="4" width="16" height="12" rx="2" /><circle cx="8" cy="10" r="2" /><path d="M12 8h4M12 11h3" /></svg>
+                Generate ID Card
+              </button>
               <button className={styles.cancelBtn} onClick={() => setSelectedStudent(null)}>Close</button>
             </div>
           </div>
@@ -382,11 +430,11 @@ export default function AdminStudentsPage() {
 
       {/* ── Add Student Modal ── */}
       {showAddModal && (
-        <div className={styles.modalOverlay} onClick={() => setShowAddModal(false)}>
+        <div className={styles.modalOverlay} onClick={() => { setShowAddModal(false); setStudentIdFile(null); setFatherIdFile(null); setMotherIdFile(null); }}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>Add New Student</h2>
-              <button className={styles.modalClose} onClick={() => setShowAddModal(false)}>
+              <button className={styles.modalClose} onClick={() => { setShowAddModal(false); setStudentIdFile(null); setFatherIdFile(null); setMotherIdFile(null); }}>
                 <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <path d="M5 5l10 10M15 5L5 15" />
                 </svg>
@@ -394,6 +442,11 @@ export default function AdminStudentsPage() {
             </div>
             <div className={styles.modalBody}>
               <div className={styles.formGrid}>
+                {/* ── Personal Information ── */}
+                <div className={styles.formSection}>
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="10" cy="6" r="4" /><path d="M3 18c0-4 3.1-7 7-7s7 3 7 7" /></svg>
+                  Personal Information
+                </div>
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>Full Name</label>
                   <input className={styles.formInput} type="text" placeholder="Student full name" />
@@ -460,11 +513,127 @@ export default function AdminStudentsPage() {
                   <label className={styles.formLabel}>Address</label>
                   <input className={styles.formInput} type="text" placeholder="Full address" />
                 </div>
+
+                {/* ── Fee Information ── */}
+                <div className={styles.formSection}>
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="16" height="12" rx="2" /><path d="M2 8h16" /><path d="M6 12h3" /></svg>
+                  Fee Information
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Fee Plan</label>
+                  <select className={styles.formSelect}>
+                    <option value="">Select fee plan...</option>
+                    {feeStructure.map((fs) => (
+                      <option key={fs.id} value={fs.id}>{fs.feeType} (Class {fs.classRange}) — {INR.format(fs.amount)}/{fs.frequency}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Annual Tuition Fee</label>
+                  <input className={styles.formInput} type="number" placeholder="e.g. 42000" />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Transport Fee (if applicable)</label>
+                  <input className={styles.formInput} type="number" placeholder="e.g. 12000" />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Discount / Scholarship (%)</label>
+                  <input className={styles.formInput} type="number" placeholder="0" min="0" max="100" />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Payment Mode</label>
+                  <select className={styles.formSelect}>
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="half-yearly">Half-Yearly</option>
+                    <option value="annually">Annually</option>
+                  </select>
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Admission Fee (One-time)</label>
+                  <input className={styles.formInput} type="number" placeholder="e.g. 15000" />
+                </div>
+
+                {/* ── ID Proof & Documents ── */}
+                <div className={styles.formSection}>
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="16" height="12" rx="2" /><circle cx="8" cy="10" r="2" /><path d="M12 8h4M12 11h3" /></svg>
+                  ID Proof &amp; Documents
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Student ID Proof (Aadhaar / Birth Certificate)</label>
+                  <div className={styles.fileUploadZone}>
+                    <input
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.pdf"
+                      onChange={(e) => setStudentIdFile(e.target.files?.[0] || null)}
+                    />
+                    {studentIdFile ? (
+                      <div className={styles.fileChip}>
+                        {studentIdFile.name}
+                        <button className={styles.fileChipRemove} onClick={(e) => { e.stopPropagation(); setStudentIdFile(null); }}>×</button>
+                      </div>
+                    ) : (
+                      <div className={styles.fileUploadLabel}>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 14V3M6 7l4-4 4 4" /><path d="M3 14v3h14v-3" /></svg>
+                        <strong>Click to upload</strong>
+                        JPG, PNG or PDF (max 5MB)
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>
+                    Father&apos;s ID Card <span className={styles.optionalTag}>(Optional)</span>
+                  </label>
+                  <div className={styles.fileUploadZone}>
+                    <input
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.pdf"
+                      onChange={(e) => setFatherIdFile(e.target.files?.[0] || null)}
+                    />
+                    {fatherIdFile ? (
+                      <div className={styles.fileChip}>
+                        {fatherIdFile.name}
+                        <button className={styles.fileChipRemove} onClick={(e) => { e.stopPropagation(); setFatherIdFile(null); }}>×</button>
+                      </div>
+                    ) : (
+                      <div className={styles.fileUploadLabel}>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 14V3M6 7l4-4 4 4" /><path d="M3 14v3h14v-3" /></svg>
+                        <strong>Upload Father&apos;s ID</strong>
+                        Aadhaar, Voter ID, or Driving License
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>
+                    Mother&apos;s ID Card <span className={styles.optionalTag}>(Optional)</span>
+                  </label>
+                  <div className={styles.fileUploadZone}>
+                    <input
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.pdf"
+                      onChange={(e) => setMotherIdFile(e.target.files?.[0] || null)}
+                    />
+                    {motherIdFile ? (
+                      <div className={styles.fileChip}>
+                        {motherIdFile.name}
+                        <button className={styles.fileChipRemove} onClick={(e) => { e.stopPropagation(); setMotherIdFile(null); }}>×</button>
+                      </div>
+                    ) : (
+                      <div className={styles.fileUploadLabel}>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 14V3M6 7l4-4 4 4" /><path d="M3 14v3h14v-3" /></svg>
+                        <strong>Upload Mother&apos;s ID</strong>
+                        Aadhaar, Voter ID, or Driving License
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
             <div className={styles.modalFooter}>
-              <button className={styles.cancelBtn} onClick={() => setShowAddModal(false)}>Cancel</button>
-              <button className={styles.submitBtn} onClick={() => setShowAddModal(false)}>Add Student</button>
+              <button className={styles.cancelBtn} onClick={() => { setShowAddModal(false); setStudentIdFile(null); setFatherIdFile(null); setMotherIdFile(null); }}>Cancel</button>
+              <button className={styles.submitBtn} onClick={() => { setShowAddModal(false); setStudentIdFile(null); setFatherIdFile(null); setMotherIdFile(null); alert('Student added successfully!'); }}>Add Student</button>
             </div>
           </div>
         </div>

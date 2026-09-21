@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
+import Link from 'next/link';
 import {
   getDailySummary,
+  getNotificationPreferences,
   getStudent,
   getHomeworkList,
   getAttendanceStats,
@@ -9,9 +12,14 @@ import {
   getFeeDetails,
   getNotices,
   getTodayTimetable,
+  getCurrentHour,
 } from '@/hooks/use-data';
 import { formatCurrency, formatDate, getSubjectColor } from '@/lib/utils';
+import { useToast } from '@/components/common/Toast';
 import styles from './daily-summary.module.css';
+
+const SUMMARY_TIMES = ['05:00 PM', '06:00 PM', '06:30 PM', '07:00 PM', '08:00 PM', '09:00 PM'];
+const CHANNEL_LABELS = { push: 'Push notification', sms: 'SMS', email: 'Email' } as const;
 
 export default function DailySummaryPage() {
   const summary = getDailySummary();
@@ -27,11 +35,52 @@ export default function DailySummaryPage() {
   const overdueHW = homework.filter(h => h.status === 'overdue');
   const unreadNotices = notices.filter(n => !n.isRead);
   const classPeriods = timetable.filter(p => p.type === 'class');
-  const currentHour = 10;
+  const currentHour = getCurrentHour();
   const completedPeriods = classPeriods.filter(p => {
     const h = parseInt(p.endTime.split(':')[0]);
     return h <= currentHour;
   });
+
+  const initialPrefs = getNotificationPreferences();
+  const [deliveryEnabled, setDeliveryEnabled] = useState(initialPrefs.dailySummary);
+  const [deliveryTime, setDeliveryTime] = useState(initialPrefs.dailySummaryTime);
+  const [channels, setChannels] = useState(initialPrefs.channels);
+  const { showToast, toastNode } = useToast();
+
+  function buildSummaryText(): string {
+    const lines = [
+      `${student.name} - Daily Summary (${formatDate(summary.date)})`,
+      `Attendance: ${summary.attendance.status}${summary.attendance.checkInTime ? ` (check-in ${summary.attendance.checkInTime})` : ''}`,
+      `Homework: ${overdueHW.length} overdue, ${pendingHW.length} pending`,
+      `Notices: ${unreadNotices.length} unread`,
+    ];
+    if (summary.upcomingExam) lines.push(`Next exam: ${summary.upcomingExam.subject} on ${formatDate(summary.upcomingExam.date)}`);
+    if (fees.totalBalance > 0) lines.push(`Fees due: ${formatCurrency(fees.totalBalance)}`);
+    return lines.join('\n');
+  }
+
+  async function shareSummary() {
+    const text = buildSummaryText();
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'Daily Summary', text });
+      } else {
+        await navigator.clipboard.writeText(text);
+        showToast('Summary copied to clipboard');
+      }
+    } catch {
+      // The user dismissed the share sheet; nothing to do.
+    }
+  }
+
+  function saveDelivery() {
+    if (deliveryEnabled && !channels.push && !channels.sms && !channels.email) {
+      showToast('Select at least one delivery channel', 'error');
+      return;
+    }
+    // TODO: PUT /api/parents/:id/notification-preferences when backend is connected
+    showToast(deliveryEnabled ? `Daily summary will be sent at ${deliveryTime}` : 'Daily summary notification turned off', 'info');
+  }
 
   const greeting = currentHour < 12 ? 'Good Morning' : currentHour < 17 ? 'Good Afternoon' : 'Good Evening';
 
@@ -43,11 +92,17 @@ export default function DailySummaryPage() {
           <div className={styles.greeting}>{greeting}!</div>
           <div className={styles.dateText}>{formatDate(summary.date)} &middot; {student.name} &middot; Class {student.class}-{student.section}</div>
         </div>
+        <div className={styles.headerRight}>
+        <button className={styles.shareBtn} onClick={shareSummary}>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="4" cy="8" r="2" /><circle cx="12" cy="3.5" r="2" /><circle cx="12" cy="12.5" r="2" /><path d="M5.8 7l4.4-2.5M5.8 9l4.4 2.5" /></svg>
+          Share
+        </button>
         <div className={styles.dayProgress}>
           <div className={styles.dayLabel}>{completedPeriods.length}/{classPeriods.length} periods done</div>
           <div className={styles.dayBar}>
             <div className={styles.dayBarFill} style={{ width: `${(completedPeriods.length / classPeriods.length) * 100}%` }} />
           </div>
+        </div>
         </div>
       </div>
 
@@ -236,6 +291,44 @@ export default function DailySummaryPage() {
           </div>
         </div>
       </div>
+
+      {/* Delivery preferences */}
+      <div className={styles.detailCard}>
+        <div className={styles.detailHeader}>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 2a5 5 0 015 5c0 3 1 4.5 1.5 5.5h-13C3 11.5 4 10 4 7a5 5 0 015-5z" /><path d="M7.5 14a1.5 1.5 0 003 0" /></svg>
+          Get this summary every day
+        </div>
+        <div className={styles.deliveryBody}>
+          <label className={styles.deliveryRow}>
+            <span>Send me a daily summary notification</span>
+            <input type="checkbox" checked={deliveryEnabled} onChange={(e) => setDeliveryEnabled(e.target.checked)} />
+          </label>
+          <div className={`${styles.deliveryRow} ${deliveryEnabled ? '' : styles.deliveryDisabled}`}>
+            <label htmlFor="summary-time">Delivery time</label>
+            <select id="summary-time" className={styles.deliverySelect} value={deliveryTime} onChange={(e) => setDeliveryTime(e.target.value)} disabled={!deliveryEnabled}>
+              {SUMMARY_TIMES.map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+          <div className={`${styles.deliveryChannels} ${deliveryEnabled ? '' : styles.deliveryDisabled}`}>
+            {(Object.keys(CHANNEL_LABELS) as Array<keyof typeof CHANNEL_LABELS>).map((key) => (
+              <label key={key} className={styles.channelOption}>
+                <input
+                  type="checkbox"
+                  checked={channels[key]}
+                  disabled={!deliveryEnabled}
+                  onChange={(e) => setChannels({ ...channels, [key]: e.target.checked })}
+                />
+                {CHANNEL_LABELS[key]}
+              </label>
+            ))}
+          </div>
+          <div className={styles.deliveryFooter}>
+            <Link href="/settings" className={styles.deliveryLink}>More notification settings</Link>
+            <button className={styles.deliverySave} onClick={saveDelivery}>Save</button>
+          </div>
+        </div>
+      </div>
+      {toastNode}
     </div>
   );
 }
